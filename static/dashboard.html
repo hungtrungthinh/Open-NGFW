@@ -8,348 +8,594 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #f4f6fa; }
         .sidebar {
-            background: #23272f;
-            color: #fff;
-            min-width: 220px;
-            max-width: 240px;
-            height: 100vh;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
         }
-        .sidebar .active, .sidebar .menu-item:hover {
-            background: #2d323c;
-            color: #38bdf8;
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
-        .sidebar .menu-item {
-            transition: all 0.2s;
+        .submenu {
+            transition: all 0.3s ease;
         }
-        .sidebar .menu-icon {
-            width: 22px;
+        .section {
+            transition: opacity 0.3s ease;
         }
-        .sidebar .submenu {
-            background: #23272f;
-            margin-left: 32px;
-            font-size: 0.95em;
-        }
-        .sidebar .submenu li {
-            padding-left: 16px;
-        }
-        .main-content {
-            margin-left: 240px;
-        }
-        .card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            padding: 1.5rem;
-        }
-        .widget-title {
-            font-weight: 600;
-            color: #23272f;
-        }
-        .hidden-section { display: none; }
     </style>
 </head>
-<body class="flex">
+<body class="flex bg-gray-100 min-h-screen">
     <!-- Sidebar -->
-    <aside class="sidebar flex flex-col py-6 px-3 fixed top-0 left-0 bottom-0 z-40">
-        <div class="flex items-center mb-8">
-            <i class="fas fa-shield-alt text-2xl text-cyan-400 mr-3"></i>
-            <span class="text-xl font-bold tracking-wide">Open-NGFW</span>
+    <aside class="sidebar flex flex-col p-4 bg-green-800 text-white min-w-[220px] max-w-[240px] h-screen border-r border-green-900">
+        <div class="logo flex items-center gap-2 text-xl font-bold mb-6">
+            <i class="fa-solid fa-shield-halved text-yellow-400"></i> Open-NGFW
         </div>
         <nav class="flex-1">
-            <ul class="space-y-1" id="sidebarMenu">
-                <li class="menu-item active" data-section="dashboard"><i class="fas fa-tachometer-alt menu-icon mr-3"></i> Dashboard</li>
-                <li class="menu-item" data-section="status"><i class="fas fa-info-circle menu-icon mr-3"></i> Status</li>
-                <li class="menu-item" data-section="wan"><i class="fas fa-globe menu-icon mr-3"></i> Internet / WAN</li>
-                <li class="menu-item has-submenu" data-section="policy">
-                    <div class="flex items-center justify-between cursor-pointer">
-                        <span><i class="fas fa-list-check menu-icon mr-3"></i> Policy / Rules</span>
-                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+            <ul id="sidebarMenu" class="space-y-1">
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('dashboard-sub', this)">
+                        <i class="fa-solid fa-gauge-high"></i> Dashboard <span class="ml-auto text-xs">+</span>
                     </div>
-                    <ul class="submenu space-y-1 hidden">
-                        <li class="submenu-item" data-section="rules-list">Rules List</li>
-                        <li class="submenu-item" data-section="rules-add">Add New Rule</li>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="dashboard-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('status', this)"><i class="fa-solid fa-circle-info"></i> Status</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('security', this)"><i class="fa-solid fa-shield"></i> Security</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('network', this)"><i class="fa-solid fa-ethernet"></i> Network</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('users_devices', this)"><i class="fa-solid fa-users"></i> Users & Devices</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('system', this)"><i class="fa-solid fa-gear"></i> System</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ot_dashboard', this)"><i class="fa-solid fa-industry"></i> OT Dashboard</li>
                     </ul>
                 </li>
-                <li class="menu-item has-submenu" data-section="ips">
-                    <div class="flex items-center justify-between cursor-pointer">
-                        <span><i class="fas fa-shield-virus menu-icon mr-3"></i> IPS / IDS</span>
-                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('entry-sub', this)">
+                        <i class="fa-solid fa-shield-halved"></i> Security Entry <span class="ml-auto text-xs">+</span>
                     </div>
-                    <ul class="submenu space-y-1 hidden">
-                        <li class="submenu-item" data-section="ips-stats">Statistics</li>
-                        <li class="submenu-item" data-section="ips-log">Attack Logs</li>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="entry-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_topology', this)"><i class="fa-solid fa-diagram-project"></i> Topology</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_physical', this)"><i class="fa-solid fa-server"></i> Physical Topology</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_logical', this)"><i class="fa-solid fa-sitemap"></i> Logical Topology</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_automation', this)"><i class="fa-solid fa-robot"></i> Automation</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_connectors', this)"><i class="fa-solid fa-plug"></i> Entry Connectors</li>
                     </ul>
                 </li>
-                <li class="menu-item has-submenu" data-section="bandwidth">
-                    <div class="flex items-center justify-between cursor-pointer">
-                        <span><i class="fas fa-network-wired menu-icon mr-3"></i> Bandwidth</span>
-                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('network-sub', this)">
+                        <i class="fa-solid fa-ethernet"></i> Network <span class="ml-auto text-xs">+</span>
                     </div>
-                    <ul class="submenu space-y-1 hidden">
-                        <li class="submenu-item" data-section="bw-overview">Overview</li>
-                        <li class="submenu-item" data-section="bw-interface">By Interface</li>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="network-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('interfaces', this)"><i class="fa-solid fa-network-wired"></i> Interfaces</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('static_routes', this)"><i class="fa-solid fa-route"></i> Static Routes</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('policy_routes', this)"><i class="fa-solid fa-random"></i> Policy Routes</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('routing_objects', this)"><i class="fa-solid fa-cube"></i> Routing Objects</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('sdwan', this)"><i class="fa-solid fa-network-wired"></i> SD-WAN</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('dns', this)"><i class="fa-solid fa-globe"></i> DNS</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('extender', this)"><i class="fa-solid fa-signal"></i> Extender</li>
                     </ul>
                 </li>
-                <li class="menu-item has-submenu" data-section="wifi">
-                    <div class="flex items-center justify-between cursor-pointer">
-                        <span><i class="fas fa-wifi menu-icon mr-3"></i> Wi-Fi</span>
-                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('policy-sub', this)">
+                        <i class="fa-solid fa-shield"></i> Policy & Objects <span class="ml-auto text-xs">+</span>
                     </div>
-                    <ul class="submenu space-y-1 hidden">
-                        <li class="submenu-item" data-section="wifi-ssid">SSID List</li>
-                        <li class="submenu-item" data-section="wifi-client">Clients</li>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="policy-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('firewall_policy', this)"><i class="fa-solid fa-shield-halved"></i> Firewall Policy</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('virtual_ips', this)"><i class="fa-solid fa-network-wired"></i> Virtual IPs</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('traffic_shaping', this)"><i class="fa-solid fa-sliders-h"></i> Traffic Shaping</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('addresses', this)"><i class="fa-solid fa-address-book"></i> Addresses</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('services', this)"><i class="fa-solid fa-concierge-bell"></i> Services</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('schedules', this)"><i class="fa-solid fa-calendar-alt"></i> Schedules</li>
                     </ul>
                 </li>
-                <li class="menu-item has-submenu" data-section="system">
-                    <div class="flex items-center justify-between cursor-pointer">
-                        <span><i class="fas fa-cogs menu-icon mr-3"></i> System</span>
-                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('profiles-sub', this)">
+                        <i class="fa-solid fa-shield-virus"></i> Security Profiles <span class="ml-auto text-xs">+</span>
                     </div>
-                    <ul class="submenu space-y-1 hidden">
-                        <li class="submenu-item" data-section="sys-info">System Info</li>
-                        <li class="submenu-item" data-section="sys-user">User Management</li>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="profiles-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('antivirus', this)"><i class="fa-solid fa-bug"></i> Antivirus</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('web_filter', this)"><i class="fa-solid fa-filter"></i> Web Filter</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('dns_filter', this)"><i class="fa-solid fa-globe"></i> DNS Filter</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ips', this)"><i class="fa-solid fa-shield-alt"></i> Intrusion Prevention (IPS)</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('app_control', this)"><i class="fa-solid fa-th-large"></i> Application Control</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('dlp', this)"><i class="fa-solid fa-lock"></i> Data Loss Prevention (DLP)</li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('vpn-sub', this)">
+                        <i class="fa-solid fa-lock"></i> VPN <span class="ml-auto text-xs">+</span>
+                    </div>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="vpn-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ipsec_tunnels', this)"><i class="fa-solid fa-link"></i> IPsec Tunnels</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ssl_vpn_settings', this)"><i class="fa-solid fa-cog"></i> SSL-VPN Settings</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ssl_vpn_portals', this)"><i class="fa-solid fa-door-open"></i> SSL-VPN Portals</li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('system-sub', this)">
+                        <i class="fa-solid fa-gear"></i> System <span class="ml-auto text-xs">+</span>
+                    </div>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="system-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('administrators', this)"><i class="fa-solid fa-user-shield"></i> Administrators</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('guard', this)"><i class="fa-solid fa-shield"></i> Guard</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('certificates', this)"><i class="fa-solid fa-certificate"></i> Certificates</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('settings', this)"><i class="fa-solid fa-sliders-h"></i> Settings</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ha', this)"><i class="fa-solid fa-layer-group"></i> High Availability (HA)</li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('log-sub', this)">
+                        <i class="fa-solid fa-file-lines"></i> Log & Report <span class="ml-auto text-xs">+</span>
+                    </div>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="log-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('local_traffic_log', this)"><i class="fa-solid fa-traffic-light"></i> Local Traffic Log</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('analyzer', this)"><i class="fa-solid fa-chart-bar"></i> Analyzer</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('reports', this)"><i class="fa-solid fa-file-alt"></i> Reports</li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('monitor-sub', this)">
+                        <i class="fa-solid fa-desktop"></i> Monitor <span class="ml-auto text-xs">+</span>
+                    </div>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="monitor-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('routing_monitor', this)"><i class="fa-solid fa-route"></i> Routing Monitor</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('vpn_monitor', this)"><i class="fa-solid fa-lock"></i> VPN Monitor</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('sdwan_monitor', this)"><i class="fa-solid fa-network-wired"></i> SD-WAN Monitor</li>
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('wifi_monitor', this)"><i class="fa-solid fa-wifi"></i> Wi-Fi Monitor</li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('wifi-switch-sub', this)">
+                        <i class="fa-solid fa-wifi"></i> Wi-Fi & Switch Controller <span class="ml-auto text-xs">+</span>
+                    </div>
+                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="wifi-switch-sub">
+                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('wifi_ssids', this)"><i class="fa-solid fa-wifi"></i> Wi-Fi SSIDs</li>
                     </ul>
                 </li>
             </ul>
         </nav>
-        <div class="mt-8 text-xs text-gray-400 text-center">&copy; 2024 Open-NGFW</div>
+        <div class="mt-auto text-xs text-gray-300 text-center pt-4">Open-NGFW v1.1.2</div>
     </aside>
-
-    <!-- Main Content -->
-    <main class="main-content flex-1 min-h-screen p-8">
-        <!-- Top Bar -->
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
-            <div class="flex items-center space-x-4">
-                <span class="text-gray-500">User: <b>admin</b></span>
-                <button class="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+    <!-- Main content -->
+    <div class="flex flex-col flex-1 min-h-screen">
+        <div class="topbar flex items-center justify-end h-12 bg-green-800 text-white px-8">
+            <div class="user flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-user-circle"></i> admin
             </div>
         </div>
-
-        <!-- Dashboard Section -->
-        <section id="section-dashboard">
-            <!-- Widget Row 1: System Info, WAN, Rules, Bandwidth -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="card">
-                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-server mr-2 text-cyan-500"></i> System Info</div>
-                    <div class="text-sm text-gray-700">
-                        <div><b>Hostname:</b> Open-NGFW</div>
-                        <div><b>Uptime:</b> <span id="sysUptime">--</span></div>
-                        <div><b>Mode:</b> NAT</div>
-                        <div><b>IP:</b> <span id="sysIP">--</span></div>
+        <main class="main-content flex-1 p-6">
+            <button class="add-widget-btn border border-gray-300 bg-white text-green-800 font-semibold text-sm px-4 py-1 rounded mb-2 shadow-sm hover:bg-green-50">+ Add widget</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- System Information -->
+                <div class="widget-card rounded shadow border bg-white p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="widget-title flex items-center gap-2 text-green-800 font-semibold text-base"><i class="fa-solid fa-server"></i> System Information</div>
+                        <i class="fa-solid fa-ellipsis-vertical text-gray-400 text-xs"></i>
+                    </div>
+                    <div class="text-sm space-y-1">
+                        <div><b>Hostname:</b> <span class="text-green-700">ngfw-cls450erd</span></div>
+                        <div><b>Serial number:</b> <span class="text-gray-500">NGFW.EA-TQ9F-V3ZM-HX2L.N5</span></div>
+                        <div><b>Firmware:</b> <span class="text-gray-500">v1.1.0 build1360 <span class="text-orange-500">(Canary)</span></span></div>
+                        <div><b>Mode:</b> <span class="text-green-700">NAT</span></div>
+                        <div><b>System time:</b> <span class="text-blue-600">2024/07/12 10:27:26</span></div>
+                        <div><b>Uptime:</b> <span class="text-gray-500">20h 20m 54s</span></div>
+                        <div><b>WAN IP:</b> <span class="text-red-600">***.***.**.***</span></div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-globe mr-2 text-green-500"></i> Internet / WAN</div>
-                    <div class="text-sm text-gray-700">
-                        <div><b>Status:</b> <span id="wanStatus">--</span></div>
-                        <div><b>IP:</b> <span id="wanIP">--</span></div>
-                        <div><b>Gateway:</b> <span id="wanGW">--</span></div>
-                        <div><b>Type:</b> <span id="wanType">--</span></div>
+                <!-- Licenses -->
+                <div class="widget-card rounded shadow border bg-white p-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="widget-title flex items-center gap-2 text-base font-semibold">
+                      Licenses
+                      <span class="text-xs text-gray-400">(🇺🇸 NGFW-CL-XXXX-XXXX)</span>
+                      <i class="fa-solid fa-circle-info text-blue-400 text-xs ml-1"></i>
+                    </div>
+                    <i class="fa-solid fa-bars text-gray-400 text-base"></i>
+                  </div>
+                  <div class="grid grid-cols-3 gap-2 mb-2 mt-2">
+                    <div class="flex flex-col items-center bg-green-700 rounded p-2">
+                      <i class="fa-solid fa-headset text-white text-xl"></i>
+                      <span class="text-white text-xs mt-1">Support</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-green-700 rounded p-2">
+                      <i class="fa-solid fa-arrow-rotate-right text-white text-xl"></i>
+                      <span class="text-white text-xs mt-1">Updates</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-green-700 rounded p-2">
+                      <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+                      <span class="text-white text-xs mt-1">IPS</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-green-700 rounded p-2">
+                      <i class="fa-solid fa-virus-covid text-white text-xl"></i>
+                      <span class="text-white text-xs mt-1">AntiVirus</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-green-700 rounded p-2">
+                      <i class="fa-solid fa-filter text-white text-xl"></i>
+                      <span class="text-white text-xs mt-1">Web Filter</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-green-700 rounded p-2">
+                      <i class="fa-solid fa-star text-white text-xl"></i>
+                      <span class="text-white text-xs mt-1">Rating</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-green-700 rounded p-2 col-span-3 sm:col-span-1">
+                      <i class="fa-solid fa-bolt text-white text-xl"></i>
+                      <span class="text-white text-xs mt-1">Outbreak</span>
+                    </div>
+                  </div>
+                  <div class="text-xs text-gray-500 font-semibold mt-1 mb-1">Token</div>
+                  <div class="w-full h-4 bg-gray-100 rounded">
+                    <div class="bg-green-400 h-4 rounded" style="width:0%"></div>
+                  </div>
+                  <div class="text-xs text-gray-400">0%</div>
+                </div>
+                <!-- Virtual Machine -->
+                <div class="widget-card rounded shadow border bg-white p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="widget-title flex items-center gap-2 text-green-800 font-semibold text-base"><i class="fa-solid fa-microchip"></i> Virtual Machine</div>
+                        <i class="fa-solid fa-ellipsis-vertical text-gray-400 text-xs"></i>
+                    </div>
+                    <div class="text-sm space-y-1">
+                        <div><b>License:</b> NG0***************</div>
+                        <div><b>Allocated vCPUs:</b> 16/16</div>
+                        <div class="w-full bg-red-200 rounded h-2 mb-1">
+                            <div class="bg-red-500 h-2 rounded" style="width:100%"></div>
+                        </div>
+                        <div><b>Allocated RAM:</b> 64GB</div>
+                        <div><b>Auto scaling:</b> <span class="text-red-500"><i class="fa-solid fa-xmark"></i> Disabled</span></div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-list-check mr-2 text-yellow-500"></i> Rules</div>
-                    <div class="text-sm text-gray-700">
-                        <div><b>Active:</b> <span id="rulesActive">--</span></div>
-                        <div><b>Total:</b> <span id="rulesTotal">--</span></div>
+                <!-- Cloud Status -->
+                <div class="widget-card rounded shadow border bg-white p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="widget-title flex items-center gap-2 text-green-800 font-semibold text-base"><i class="fa-solid fa-cloud"></i> Cloud Status</div>
+                        <i class="fa-solid fa-ellipsis-vertical text-gray-400 text-xs"></i>
                     </div>
+                    <div class="flex items-center gap-2 text-orange-500 text-xs mt-2"><i class="fa-solid fa-triangle-exclamation"></i> Not Activated</div>
                 </div>
-                <div class="card">
-                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-network-wired mr-2 text-purple-500"></i> Bandwidth</div>
-                    <div class="text-sm text-gray-700">
-                        <div><b>Download:</b> <span id="bwDown">--</span></div>
-                        <div><b>Upload:</b> <span id="bwUp">--</span></div>
+                <!-- Security Entry -->
+                <div class="widget-card rounded shadow border bg-white p-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="widget-title flex items-center gap-2 text-green-800 font-semibold text-base">
+                      <i class="fa-solid fa-network-wired"></i> Security Entry
                     </div>
-                </div>
-            </div>
-
-            <!-- Widget Row 2: Security, Traffic, Chart -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <div class="card col-span-2">
-                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-chart-pie mr-2 text-pink-500"></i> Traffic Statistics</div>
-                    <canvas id="trafficChart" height="120"></canvas>
-                </div>
-                <div class="card">
-                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-shield-virus mr-2 text-red-500"></i> Security</div>
-                    <div class="text-sm text-gray-700">
-                        <div><b>Threats Blocked:</b> <span id="threatsBlocked">--</span></div>
-                        <div><b>Intrusions:</b> <span id="intrusions">--</span></div>
-                        <div><b>Malware:</b> <span id="malware">--</span></div>
+                    <i class="fa-solid fa-table-cells-large text-gray-400 text-xs"></i>
+                  </div>
+                  <div class="text-sm">
+                    <!-- LAN Edge Header -->
+                    <div class="bg-gray-100 font-bold px-2 py-1 rounded mb-2 text-center">LAN Edge</div>
+                    <div class="grid grid-cols-2 gap-y-2 gap-x-4 mb-3">
+                      <!-- Gateway -->
+                      <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">5</span>
+                        <i class="fa-solid fa-shield-halved text-blue-700 text-lg"></i>
+                        <span class="font-medium text-gray-900">Gateway</span>
+                      </div>
+                      <!-- Switch -->
+                      <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
+                        <i class="fa-solid fa-network-wired text-blue-700 text-lg"></i>
+                        <span class="font-medium text-gray-900">Switch</span>
+                      </div>
+                      <!-- AP -->
+                      <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold">1</span>
+                        <i class="fa-solid fa-wifi text-red-500 text-lg"></i>
+                        <span class="font-medium text-gray-900">AP</span>
+                      </div>
+                      <!-- Extender (inactive/gray) -->
+                      <div class="flex items-center gap-2 opacity-50">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-300 text-gray-500 text-xs font-bold">0</span>
+                        <i class="fa-solid fa-signal text-gray-400 text-lg"></i>
+                        <span class="font-medium text-gray-500">Extender</span>
+                      </div>
                     </div>
+                    <!-- Entry Connectors Header -->
+                    <div class="bg-gray-100 font-bold px-2 py-1 rounded mb-2 text-center">Entry Connectors</div>
+                    <div class="grid grid-cols-2 gap-y-2 gap-x-4">
+                      <!-- Logging -->
+                      <div class="flex items-center gap-2">
+                        <i class="fa-regular fa-clock text-blue-600 text-lg"></i>
+                        <span class="font-medium text-gray-900">Logging</span>
+                      </div>
+                      <!-- Sandbox -->
+                      <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-shield text-blue-600 text-lg"></i>
+                        <span class="font-medium text-gray-900">Sandbox</span>
+                      </div>
+                      <!-- Central Management (inactive/gray) -->
+                      <div class="flex items-center gap-2 opacity-50">
+                        <i class="fa-regular fa-building text-gray-400 text-lg"></i>
+                        <span class="font-medium text-gray-500">Central Management</span>
+                      </div>
+                      <!-- Client EMS -->
+                      <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield text-red-500 text-lg"></i>
+                        <span class="font-medium text-gray-900">Client EMS</span>
+                      </div>
+                      <!-- Mail -->
+                      <div class="flex items-center gap-2">
+                        <i class="fa-regular fa-envelope text-blue-600 text-lg"></i>
+                        <span class="font-medium text-gray-900">Mail</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Administrators -->
+                <div class="widget-card rounded shadow border bg-white p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="widget-title flex items-center gap-2 text-green-800 font-semibold text-base"><i class="fa-solid fa-user-shield"></i> Administrators</div>
+                        <i class="fa-solid fa-rotate text-gray-400 text-xs"></i>
+                    </div>
+                    <div class="flex gap-2 mb-1 text-sm">
+                        <span class="bg-blue-100 text-blue-700 rounded px-2 py-0.5 text-sm">Explorer</span>
+                        <span class="bg-blue-100 text-blue-700 rounded px-2 py-0.5 text-sm">HTTPS</span>
+                    </div>
+                    <div class="text-sm"><b>admin</b> <span class="text-gray-400">super_admin</span></div>
+                </div>
+                <!-- CPU Chart -->
+                <div class="widget-card rounded shadow border bg-white p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="widget-title flex items-center gap-2 text-green-800 font-semibold text-base"><i class="fa-solid fa-microchip"></i> CPU</div>
+                        <span class="text-xs text-gray-500">1 minute <i class="fa-solid fa-chevron-down text-[10px]"></i></span>
+                        <i class="fa-solid fa-ellipsis-vertical text-gray-400 text-xs"></i>
+                    </div>
+                    <div class="h-48"><canvas id="cpuChart" class="w-full h-full"></canvas></div>
+                    <div class="text-xs text-right">Current usage <b>5%</b></div>
+                </div>
+                <!-- Memory Chart -->
+                <div class="widget-card rounded shadow border bg-white p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="widget-title flex items-center gap-2 text-green-800 font-semibold text-base"><i class="fa-solid fa-memory"></i> Memory</div>
+                        <span class="text-xs text-gray-500">1 minute <i class="fa-solid fa-chevron-down text-[10px]"></i></span>
+                        <i class="fa-solid fa-ellipsis-vertical text-gray-400 text-xs"></i>
+                    </div>
+                    <div class="h-48"><canvas id="memChart" class="w-full h-full"></canvas></div>
+                    <div class="text-xs text-right">Current usage <b>37%</b></div>
+                </div>
+                <!-- Sessions Chart -->
+                <div class="widget-card rounded shadow border bg-white p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="widget-title flex items-center gap-2 text-green-800 font-semibold text-base"><i class="fa-solid fa-chart-area"></i> Sessions</div>
+                        <span class="text-xs text-gray-500">IPv4 <i class="fa-solid fa-chevron-down text-[10px]"></i> 1 minute <i class="fa-solid fa-chevron-down text-[10px]"></i></span>
+                        <i class="fa-solid fa-ellipsis-vertical text-gray-400 text-xs"></i>
+                    </div>
+                    <div class="h-48"><canvas id="sessionChart" class="w-full h-full"></canvas></div>
+                    <div class="text-xs text-right">Current sessions <b>1016</b> <span class="text-blue-700">SPU 0.0%</span></div>
                 </div>
             </div>
-        </section>
-
-        <!-- Status Section -->
-        <section id="section-status" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-info-circle mr-2 text-blue-500"></i> System Status</div>
-                <div class="text-gray-700">Display system status, firewall status, uptime, and other system information...</div>
-            </div>
-        </section>
-
-        <!-- WAN Section -->
-        <section id="section-wan" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-globe mr-2 text-green-500"></i> Internet / WAN</div>
-                <div class="text-gray-700">Configure and monitor Internet connection status (PPPoE, Static IP, DHCP)...</div>
-            </div>
-        </section>
-
-        <!-- Policy/Rules List Section -->
-        <section id="section-rules-list" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-list-check mr-2 text-yellow-500"></i> Rules List</div>
-                <div class="text-gray-700">Table displaying all firewall rules...</div>
-            </div>
-        </section>
-
-        <!-- Policy/Rules Add Section -->
-        <section id="section-rules-add" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-plus mr-2 text-yellow-500"></i> Add New Rule</div>
-                <div class="text-gray-700">Form to add new firewall rule...</div>
-            </div>
-        </section>
-
-        <!-- IPS/IDS Stats Section -->
-        <section id="section-ips-stats" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-chart-bar mr-2 text-red-500"></i> IPS/IDS Statistics</div>
-                <div class="text-gray-700">Attack statistics, alerts, and security metrics...</div>
-            </div>
-        </section>
-
-        <!-- IPS/IDS Log Section -->
-        <section id="section-ips-log" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-bug mr-2 text-red-500"></i> Attack Logs</div>
-                <div class="text-gray-700">Table displaying IPS/IDS attack logs...</div>
-            </div>
-        </section>
-
-        <!-- Bandwidth Overview Section -->
-        <section id="section-bw-overview" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-network-wired mr-2 text-purple-500"></i> Bandwidth Overview</div>
-                <div class="text-gray-700">Overall bandwidth statistics and usage...</div>
-            </div>
-        </section>
-
-        <!-- Bandwidth Interface Section -->
-        <section id="section-bw-interface" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-network-wired mr-2 text-purple-500"></i> Bandwidth by Interface</div>
-                <div class="text-gray-700">Bandwidth statistics per network interface...</div>
-            </div>
-        </section>
-
-        <!-- Wi-Fi SSID Section -->
-        <section id="section-wifi-ssid" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-wifi mr-2 text-blue-500"></i> SSID List</div>
-                <div class="text-gray-700">List of Wi-Fi SSIDs and their configurations...</div>
-            </div>
-        </section>
-
-        <!-- Wi-Fi Client Section -->
-        <section id="section-wifi-client" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-user-friends mr-2 text-blue-500"></i> Wi-Fi Clients</div>
-                <div class="text-gray-700">List of clients currently connected to Wi-Fi...</div>
-            </div>
-        </section>
-
-        <!-- System Info Section -->
-        <section id="section-sys-info" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-cogs mr-2 text-gray-500"></i> System Information</div>
-                <div class="text-gray-700">Hardware information, operating system details, and system resources...</div>
-            </div>
-        </section>
-
-        <!-- System User Section -->
-        <section id="section-sys-user" class="hidden-section">
-            <div class="card mb-8">
-                <div class="widget-title mb-4 flex items-center"><i class="fas fa-user-cog mr-2 text-gray-500"></i> User Management</div>
-                <div class="text-gray-700">Manage user accounts and permissions...</div>
-            </div>
-        </section>
-    </main>
-
+            <!-- Section placeholders for SPA navigation (hidden by default) -->
+            <section id="dashboard" class="section"></section>
+            <section id="status" class="section hidden"></section>
+            <section id="security" class="section hidden"></section>
+            <section id="network" class="section hidden"></section>
+            <section id="users_devices" class="section hidden"></section>
+            <section id="system" class="section hidden"></section>
+            <section id="ot_dashboard" class="section hidden"></section>
+            <section id="entry_topology" class="section hidden"></section>
+            <section id="entry_physical" class="section hidden"></section>
+            <section id="entry_logical" class="section hidden"></section>
+            <section id="entry_automation" class="section hidden"></section>
+            <section id="entry_connectors" class="section hidden"></section>
+            <section id="interfaces" class="section hidden"></section>
+            <section id="static_routes" class="section hidden"></section>
+            <section id="policy_routes" class="section hidden"></section>
+            <section id="routing_objects" class="section hidden"></section>
+            <section id="sdwan" class="section hidden"></section>
+            <section id="dns" class="section hidden"></section>
+            <section id="extender" class="section hidden"></section>
+            <section id="firewall_policy" class="section hidden"></section>
+            <section id="virtual_ips" class="section hidden"></section>
+            <section id="traffic_shaping" class="section hidden"></section>
+            <section id="addresses" class="section hidden"></section>
+            <section id="services" class="section hidden"></section>
+            <section id="schedules" class="section hidden"></section>
+            <section id="antivirus" class="section hidden"></section>
+            <section id="web_filter" class="section hidden"></section>
+            <section id="dns_filter" class="section hidden"></section>
+            <section id="ips" class="section hidden"></section>
+            <section id="app_control" class="section hidden"></section>
+            <section id="dlp" class="section hidden"></section>
+            <section id="ipsec_tunnels" class="section hidden"></section>
+            <section id="ssl_vpn_settings" class="section hidden"></section>
+            <section id="ssl_vpn_portals" class="section hidden"></section>
+            <section id="administrators" class="section hidden"></section>
+            <section id="guard" class="section hidden"></section>
+            <section id="certificates" class="section hidden"></section>
+            <section id="settings" class="section hidden"></section>
+            <section id="ha" class="section hidden"></section>
+            <section id="local_traffic_log" class="section hidden"></section>
+            <section id="analyzer" class="section hidden"></section>
+            <section id="reports" class="section hidden"></section>
+            <section id="routing_monitor" class="section hidden"></section>
+            <section id="vpn_monitor" class="section hidden"></section>
+            <section id="sdwan_monitor" class="section hidden"></section>
+            <section id="wifi_monitor" class="section hidden"></section>
+            <section id="wifi_ssids" class="section hidden"></section>
+        </main>
+    </div>
     <script>
-        // Sidebar active state, submenu logic, section switching
-        const menuItems = document.querySelectorAll('.sidebar .menu-item');
-        const submenuArrows = document.querySelectorAll('.sidebar .has-submenu .submenu-arrow');
-        const submenuItems = document.querySelectorAll('.sidebar .submenu-item');
-        const sections = document.querySelectorAll('main > section');
-
-        function showSection(sectionId) {
-            sections.forEach(sec => sec.classList.add('hidden-section'));
-            const sec = document.getElementById('section-' + sectionId);
-            if (sec) sec.classList.remove('hidden-section');
+        function toggleMenu(submenuId, el) {
+            const submenu = document.getElementById(submenuId);
+            if (submenu) submenu.classList.toggle('hidden');
+            // Active state for menu-item
+            document.querySelectorAll('.sidebar .menu-item').forEach(item => item.classList.remove('bg-green-700', 'text-white'));
+            el.classList.add('bg-green-700', 'text-white');
         }
-
-        menuItems.forEach(item => {
-            item.addEventListener('click', function(e) {
-                // If it's a submenu, just toggle
-                if (item.classList.contains('has-submenu')) {
-                    const submenu = item.querySelector('.submenu');
-                    submenu.classList.toggle('hidden');
-                    item.querySelector('.submenu-arrow').classList.toggle('fa-chevron-down');
-                    item.querySelector('.submenu-arrow').classList.toggle('fa-chevron-up');
-                    return;
-                }
-                menuItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                showSection(item.getAttribute('data-section'));
-            });
-        });
-        submenuItems.forEach(sub => {
-            sub.addEventListener('click', function(e) {
-                menuItems.forEach(i => i.classList.remove('active'));
-                sub.closest('.has-submenu').classList.add('active');
-                showSection(sub.getAttribute('data-section'));
-            });
-        });
-        // Default to dashboard
-        showSection('dashboard');
-
-        // Chart.js Traffic Chart (demo data)
-        const trafficChart = new Chart(document.getElementById('trafficChart').getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00"],
-                datasets: [
-                    {
-                        label: 'Download',
-                        data: [120, 150, 180, 100, 90, 130, 170],
-                        borderColor: '#38bdf8',
-                        backgroundColor: 'rgba(56,189,248,0.1)',
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Upload',
-                        data: [80, 60, 100, 70, 60, 90, 110],
-                        borderColor: '#f59e42',
-                        backgroundColor: 'rgba(245,158,66,0.1)',
-                        tension: 0.4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true }
+        function showSection(sectionId, el) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+            const section = document.getElementById(sectionId);
+            if (section) section.classList.remove('hidden');
+            document.querySelectorAll('.submenu-item').forEach(item => item.classList.remove('bg-green-700', 'text-yellow-400'));
+            if (el) el.classList.add('bg-green-700', 'text-yellow-400');
+        }
+        // Combine all chart initializations and showSection into a single window.onload
+        window.onload = function() {
+            showSection('dashboard');
+            // CPU Chart: 4 core
+            new Chart(document.getElementById('cpuChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ["47 seconds ago", "32 seconds ago", "17 seconds ago", "Now"],
+                    datasets: [
+                        {
+                            label: 'Core 1',
+                            data: [3, 4, 7, 5],
+                            borderColor: '#50743F',
+                            backgroundColor: 'rgba(80,116,63,0.08)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Core 2',
+                            data: [2, 3, 5, 4],
+                            borderColor: '#F6C44B',
+                            backgroundColor: 'rgba(246,196,75,0.08)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Core 3',
+                            data: [1, 2, 3, 2],
+                            borderColor: '#EC7B4D',
+                            backgroundColor: 'rgba(236,123,77,0.08)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Core 4',
+                            data: [2, 1, 2, 3],
+                            borderColor: '#A2332A',
+                            backgroundColor: 'rgba(162,51,42,0.08)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        }
+                    ]
                 },
-                scales: {
-                    y: { beginAtZero: true }
+                options: {
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#e3e6ea', drawBorder: false },
+                            ticks: { color: '#888', font: { size: 12 } }
+                        },
+                        y: {
+                            grid: { color: '#e3e6ea', drawBorder: false },
+                            ticks: { color: '#888', font: { size: 12 } },
+                            min: 0, max: 100
+                        }
+                    },
+                    elements: { line: { borderJoinStyle: 'round' } },
+                    layout: { padding: 0 },
+                    responsive: true,
+                    maintainAspectRatio: false
                 }
-            }
-        });
+            });
+            // Memory Chart: Used, Free
+            new Chart(document.getElementById('memChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ["47 seconds ago", "32 seconds ago", "17 seconds ago", "Now"],
+                    datasets: [
+                        {
+                            label: 'Used',
+                            data: [37, 36, 38, 37],
+                            borderColor: '#F6C44B',
+                            backgroundColor: 'rgba(246,196,75,0.13)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Free',
+                            data: [63, 64, 62, 63],
+                            borderColor: '#50743F',
+                            backgroundColor: 'rgba(80,116,63,0.08)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#e3e6ea', drawBorder: false },
+                            ticks: { color: '#888', font: { size: 12 } }
+                        },
+                        y: {
+                            grid: { color: '#e3e6ea', drawBorder: false },
+                            ticks: { color: '#888', font: { size: 12 } },
+                            min: 0, max: 100
+                        }
+                    },
+                    elements: { line: { borderJoinStyle: 'round' } },
+                    layout: { padding: 0 },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            // Sessions Chart: IPv4, IPv6
+            new Chart(document.getElementById('sessionChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ["47 seconds ago", "32 seconds ago", "17 seconds ago", "Now"],
+                    datasets: [
+                        {
+                            label: 'IPv4',
+                            data: [1016, 1008, 1012, 1016],
+                            borderColor: '#EC7B4D',
+                            backgroundColor: 'rgba(236,123,77,0.13)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'IPv6',
+                            data: [120, 130, 110, 125],
+                            borderColor: '#50743F',
+                            backgroundColor: 'rgba(80,116,63,0.08)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#e3e6ea', drawBorder: false },
+                            ticks: { color: '#888', font: { size: 12 } }
+                        },
+                        y: {
+                            grid: { color: '#e3e6ea', drawBorder: false },
+                            ticks: { color: '#888', font: { size: 12 } },
+                            min: 0
+                        }
+                    },
+                    elements: { line: { borderJoinStyle: 'round' } },
+                    layout: { padding: 0 },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        };
     </script>
 </body>
 </html> 

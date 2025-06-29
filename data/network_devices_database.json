@@ -1,0 +1,1499 @@
+{
+  "version": "1.0",
+  "last_updated": "2024-12-19",
+  "description": "Comprehensive database of network devices worldwide for automatic detection of RJ45 (1G-100G) and SFP/SFP+/SFP28/QSFP+/QSFP28 (1G-100G) standards",
+  "vendors": {
+    "8086": {
+      "name": "Intel Corporation",
+      "devices": {
+        "100e": {
+          "name": "82540EM Gigabit Ethernet Controller",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "1GbE",
+              "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support"],
+          "driver": "e1000",
+          "year_released": 2000
+        },
+        "100f": {
+          "name": "82545EM Gigabit Ethernet Controller",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "1GbE",
+              "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support"],
+          "driver": "e1000",
+          "year_released": 2001
+        },
+        "10d3": {
+          "name": "82574L Gigabit Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "1GbE",
+              "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "Energy Efficient Ethernet"],
+          "driver": "e1000e",
+          "year_released": 2008
+        },
+        "10fb": {
+          "name": "82599EB 10-Gigabit SFI/SFP+ Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS"],
+          "driver": "ixgbe",
+          "year_released": 2009
+        },
+        "1572": {
+          "name": "X550 10-Gigabit T Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseT/Full", "5000baseT/Full", "2500baseT/Full", "1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "Energy Efficient Ethernet"],
+          "driver": "ixgbe",
+          "year_released": 2014
+        },
+        "1583": {
+          "name": "X550 10-Gigabit SFP+ Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS"],
+          "driver": "ixgbe",
+          "year_released": 2014
+        },
+        "1584": {
+          "name": "X710 10-Gigabit SFP+ Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "DCB"],
+          "driver": "i40e",
+          "year_released": 2013
+        },
+        "1585": {
+          "name": "X710 10-Gigabit T Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseT/Full", "5000baseT/Full", "2500baseT/Full", "1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "DCB", "Energy Efficient Ethernet"],
+          "driver": "i40e",
+          "year_released": 2013
+        },
+        "1586": {
+          "name": "X710 40-Gigabit QSFP+ Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "QSFP+",
+              "max_speed": "40GbE",
+              "supported_modes": ["40000baseSR4/Full", "40000baseLR4/Full", "40000baseCR4/Full", "10000baseSR/Full", "10000baseLR/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "DCB"],
+          "driver": "i40e",
+          "year_released": 2013
+        },
+        "1587": {
+          "name": "X710 100-Gigabit QSFP28 Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "QSFP28",
+              "max_speed": "100GbE",
+              "supported_modes": ["100000baseSR4/Full", "100000baseLR4/Full", "100000baseCR4/Full", "40000baseSR4/Full", "40000baseLR4/Full", "25000baseSR/Full", "25000baseLR/Full", "10000baseSR/Full", "10000baseLR/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "DCB", "RoCE"],
+          "driver": "i40e",
+          "year_released": 2015
+        },
+        "1591": {
+          "name": "X722 10-Gigabit SFP+ Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "DCB"],
+          "driver": "i40e",
+          "year_released": 2015
+        },
+        "1592": {
+          "name": "X722 10-Gigabit T Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseT/Full", "5000baseT/Full", "2500baseT/Full", "1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "DCB", "Energy Efficient Ethernet"],
+          "driver": "i40e",
+          "year_released": 2015
+        },
+        "1593": {
+          "name": "X722 25-Gigabit SFP28 Network Connection",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP28",
+              "max_speed": "25GbE",
+              "supported_modes": ["25000baseSR/Full", "25000baseLR/Full", "25000baseCR/Full", "10000baseSR/Full", "10000baseLR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "DCB"],
+          "driver": "i40e",
+          "year_released": 2015
+        }
+      }
+    },
+    "10ec": {
+      "name": "Realtek Semiconductor Co., Ltd.",
+      "devices": {
+        "8168": {
+          "name": "RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "1GbE",
+              "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "Energy Efficient Ethernet"],
+          "driver": "r8169",
+          "year_released": 2006
+        },
+        "8125": {
+          "name": "RTL8125 2.5GbE Controller",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "2.5GbE",
+              "supported_modes": ["2500baseT/Full", "1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "Energy Efficient Ethernet"],
+          "driver": "r8169",
+          "year_released": 2019
+        },
+        "8126": {
+          "name": "RTL8126 5GbE Controller",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "5GbE",
+              "supported_modes": ["5000baseT/Full", "2500baseT/Full", "1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "Energy Efficient Ethernet"],
+          "driver": "r8169",
+          "year_released": 2020
+        }
+      }
+    },
+    "14e4": {
+      "name": "Broadcom Inc.",
+      "devices": {
+        "1657": {
+          "name": "NetXtreme BCM5720 Gigabit Ethernet PCIe",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "1GbE",
+              "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "Energy Efficient Ethernet"],
+          "driver": "tg3",
+          "year_released": 2008
+        },
+        "1684": {
+          "name": "NetXtreme II BCM57810 10 Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS"],
+          "driver": "bnx2x",
+          "year_released": 2010
+        },
+        "1686": {
+          "name": "NetXtreme II BCM57810 10-Gigabit T Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseT/Full", "5000baseT/Full", "2500baseT/Full", "1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "Energy Efficient Ethernet"],
+          "driver": "bnx2x",
+          "year_released": 2010
+        },
+        "1687": {
+          "name": "NetXtreme II BCM57840 10/20-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "20GbE",
+              "supported_modes": ["20000baseKR2/Full", "10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "DCB"],
+          "driver": "bnx2x",
+          "year_released": 2012
+        },
+        "1688": {
+          "name": "NetXtreme II BCM57840 40-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "QSFP+",
+              "max_speed": "40GbE",
+              "supported_modes": ["40000baseSR4/Full", "40000baseLR4/Full", "40000baseCR4/Full", "10000baseSR/Full", "10000baseLR/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "DCB"],
+          "driver": "bnx2x",
+          "year_released": 2012
+        }
+      }
+    },
+    "15b3": {
+      "name": "Mellanox Technologies",
+      "devices": {
+        "1003": {
+          "name": "ConnectX-3 Pro 10-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE"],
+          "driver": "mlx4_core",
+          "year_released": 2012
+        },
+        "1004": {
+          "name": "ConnectX-3 Pro 40-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "QSFP+",
+              "max_speed": "40GbE",
+              "supported_modes": ["40000baseSR4/Full", "40000baseLR4/Full", "40000baseCR4/Full", "10000baseSR/Full", "10000baseLR/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE"],
+          "driver": "mlx4_core",
+          "year_released": 2012
+        },
+        "1005": {
+          "name": "ConnectX-4 25-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP28",
+              "max_speed": "25GbE",
+              "supported_modes": ["25000baseSR/Full", "25000baseLR/Full", "25000baseCR/Full", "10000baseSR/Full", "10000baseLR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE", "NVMe-oF"],
+          "driver": "mlx5_core",
+          "year_released": 2015
+        },
+        "1006": {
+          "name": "ConnectX-4 100-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "QSFP28",
+              "max_speed": "100GbE",
+              "supported_modes": ["100000baseSR4/Full", "100000baseLR4/Full", "100000baseCR4/Full", "40000baseSR4/Full", "40000baseLR4/Full", "25000baseSR/Full", "25000baseLR/Full", "10000baseSR/Full", "10000baseLR/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE", "NVMe-oF"],
+          "driver": "mlx5_core",
+          "year_released": 2015
+        },
+        "1007": {
+          "name": "ConnectX-5 25-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP28",
+              "max_speed": "25GbE",
+              "supported_modes": ["25000baseSR/Full", "25000baseLR/Full", "25000baseCR/Full", "10000baseSR/Full", "10000baseLR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE", "NVMe-oF", "GPUDirect"],
+          "driver": "mlx5_core",
+          "year_released": 2017
+        },
+        "1008": {
+          "name": "ConnectX-5 100-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "QSFP28",
+              "max_speed": "100GbE",
+              "supported_modes": ["100000baseSR4/Full", "100000baseLR4/Full", "100000baseCR4/Full", "40000baseSR4/Full", "40000baseLR4/Full", "25000baseSR/Full", "25000baseLR/Full", "10000baseSR/Full", "10000baseLR/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE", "NVMe-oF", "GPUDirect"],
+          "driver": "mlx5_core",
+          "year_released": 2017
+        },
+        "1009": {
+          "name": "ConnectX-6 25-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP28",
+              "max_speed": "25GbE",
+              "supported_modes": ["25000baseSR/Full", "25000baseLR/Full", "25000baseCR/Full", "10000baseSR/Full", "10000baseLR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE", "NVMe-oF", "GPUDirect", "TLS"],
+          "driver": "mlx5_core",
+          "year_released": 2019
+        },
+        "100a": {
+          "name": "ConnectX-6 100-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "QSFP28",
+              "max_speed": "100GbE",
+              "supported_modes": ["100000baseSR4/Full", "100000baseLR4/Full", "100000baseCR4/Full", "40000baseSR4/Full", "40000baseLR4/Full", "25000baseSR/Full", "25000baseLR/Full", "10000baseSR/Full", "10000baseLR/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE", "NVMe-oF", "GPUDirect", "TLS"],
+          "driver": "mlx5_core",
+          "year_released": 2019
+        },
+        "100b": {
+          "name": "ConnectX-7 25-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP28",
+              "max_speed": "25GbE",
+              "supported_modes": ["25000baseSR/Full", "25000baseLR/Full", "25000baseCR/Full", "10000baseSR/Full", "10000baseLR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE", "NVMe-oF", "GPUDirect", "TLS", "DPU"],
+          "driver": "mlx5_core",
+          "year_released": 2021
+        },
+        "100c": {
+          "name": "ConnectX-7 100-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "QSFP28",
+              "max_speed": "100GbE",
+              "supported_modes": ["100000baseSR4/Full", "100000baseLR4/Full", "100000baseCR4/Full", "40000baseSR4/Full", "40000baseLR4/Full", "25000baseSR/Full", "25000baseLR/Full", "10000baseSR/Full", "10000baseLR/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "RoCE", "NVMe-oF", "GPUDirect", "TLS", "DPU"],
+          "driver": "mlx5_core",
+          "year_released": 2021
+        }
+      }
+    },
+    "1969": {
+      "name": "Qualcomm Atheros",
+      "devices": {
+        "1091": {
+          "name": "AR8161 Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "1GbE",
+              "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support"],
+          "driver": "alx",
+          "year_released": 2011
+        },
+        "1090": {
+          "name": "AR8162 Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "1GbE",
+              "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support"],
+          "driver": "alx",
+          "year_released": 2011
+        }
+      }
+    },
+    "1924": {
+      "name": "Solarflare Communications",
+      "devices": {
+        "0803": {
+          "name": "SFN5122F 10-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "Onload"],
+          "driver": "sfc",
+          "year_released": 2010
+        },
+        "0804": {
+          "name": "SFN5162F 10-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "Onload"],
+          "driver": "sfc",
+          "year_released": 2012
+        }
+      }
+    },
+    "1d6a": {
+      "name": "Chelsio Communications",
+      "devices": {
+        "0040": {
+          "name": "T420 10-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "iSCSI"],
+          "driver": "cxgb4",
+          "year_released": 2010
+        },
+        "0041": {
+          "name": "T440 10-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "iSCSI"],
+          "driver": "cxgb4",
+          "year_released": 2012
+        }
+      }
+    },
+    "19ee": {
+      "name": "Emulex Corporation",
+      "devices": {
+        "4000": {
+          "name": "OneConnect 10-Gigabit Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "SFP+",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseSR/Full", "10000baseLR/Full", "10000baseCR/Full", "1000baseX/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "FCoE"],
+          "driver": "be2net",
+          "year_released": 2010
+        },
+        "4001": {
+          "name": "OneConnect 10-Gigabit T Ethernet",
+          "type": "NIC",
+          "ports": [
+            {
+              "type": "RJ45",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseT/Full", "5000baseT/Full", "2500baseT/Full", "1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": true
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV", "RSS", "FCoE", "Energy Efficient Ethernet"],
+          "driver": "be2net",
+          "year_released": 2010
+        }
+      }
+    },
+    "1af4": {
+      "name": "Red Hat, Inc.",
+      "devices": {
+        "1000": {
+          "name": "Virtio network device",
+          "type": "Virtual",
+          "ports": [
+            {
+              "type": "Virtual",
+              "max_speed": "10GbE",
+              "supported_modes": ["10000baseT/Full", "1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+              "auto_negotiation": true,
+              "wake_on_lan": false
+            }
+          ],
+          "features": ["TCP/IP Offload", "Jumbo Frames", "VLAN Support", "SR-IOV"],
+          "driver": "virtio_net",
+          "year_released": 2008
+        }
+      }
+    },
+    "cisco": {
+      "name": "Cisco Systems, Inc.",
+      "modules": {
+        "SFP-1G-T-X": {
+          "name": "Cisco 1000BASE-T SFP Module",
+          "type": "SFP",
+          "ports": [{"type": "RJ45", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+          "media": "Copper",
+          "distance": "100m",
+          "dom": false
+        },
+        "GLC-SX-MMD": {
+          "name": "Cisco 1000BASE-SX SFP Module",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseSX/Full"],
+          "media": "MMF",
+          "distance": "550m",
+          "dom": true
+        },
+        "GLC-LH-SMD": {
+          "name": "Cisco 1000BASE-LX/LH SFP Module",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseLX/Full", "1000baseLH/Full"],
+          "media": "SMF/MMF",
+          "distance": "10km (SMF), 550m (MMF)",
+          "dom": true
+        },
+        "SFP-10G-SR": {
+          "name": "Cisco 10GBASE-SR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseSR/Full"],
+          "media": "MMF",
+          "distance": "300m",
+          "dom": true
+        },
+        "SFP-10G-LR": {
+          "name": "Cisco 10GBASE-LR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseLR/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "SFP-10G-T-X": {
+          "name": "Cisco 10GBASE-T SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "RJ45", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseT/Full", "1000baseT/Full", "100baseT/Full"],
+          "media": "Copper",
+          "distance": "30m (10G), 100m (1G/100M)",
+          "dom": false
+        },
+        "SFP-10G-ER": {
+          "name": "Cisco 10GBASE-ER SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseER/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "SFP-10G-ZR": {
+          "name": "Cisco 10GBASE-ZR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseZR/Full"],
+          "media": "SMF",
+          "distance": "80km",
+          "dom": true
+        },
+        "SFP-10G-BXD-I": {
+          "name": "Cisco 10GBASE-BXD SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10Gbase-BX/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "SFP-10G-BXU-I": {
+          "name": "Cisco 10GBASE-BXU SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10Gbase-BX/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "SFP-25G-SR-S": {
+          "name": "Cisco 25GBASE-SR SFP28 Module",
+          "type": "SFP28",
+          "ports": [{"type": "LC", "max_speed": "25GbE"}],
+          "supported_modes": ["25GbaseSR/Full"],
+          "media": "MMF",
+          "distance": "70m (OM3), 100m (OM4)",
+          "dom": true
+        },
+        "QSFP-40G-SR4": {
+          "name": "Cisco 40GBASE-SR4 QSFP+ Module",
+          "type": "QSFP+",
+          "ports": [{"type": "MPO", "max_speed": "40GbE"}],
+          "supported_modes": ["40GbaseSR4/Full"],
+          "media": "MMF",
+          "distance": "100m (OM3), 150m (OM4)",
+          "dom": true
+        },
+        "QSFP-100G-SR4-S": {
+          "name": "Cisco 100GBASE-SR4 QSFP28 Module",
+          "type": "QSFP28",
+          "ports": [{"type": "MPO", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseSR4/Full"],
+          "media": "MMF",
+          "distance": "70m (OM3), 100m (OM4)",
+          "dom": true
+        },
+        "QSFP-100G-LR4-S": {
+          "name": "Cisco 100GBASE-LR4 QSFP28 Module",
+          "type": "QSFP28",
+          "ports": [{"type": "LC", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseLR4/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "SFP-1G-T": {
+          "name": "Cisco 1000BASE-T SFP Module (Copper)",
+          "type": "SFP",
+          "ports": [{"type": "RJ45", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+          "media": "Copper",
+          "distance": "100m",
+          "dom": false
+        },
+        "SFP-1G-SX": {
+          "name": "Cisco 1000BASE-SX SFP Module (Multimode)",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseSX/Full"],
+          "media": "MMF",
+          "distance": "550m",
+          "dom": true
+        },
+        "SFP-1G-LX": {
+          "name": "Cisco 1000BASE-LX SFP Module (Single/Multimode)",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseLX/Full"],
+          "media": "SMF/MMF",
+          "distance": "10km (SMF), 550m (MMF)",
+          "dom": true
+        },
+        "SFP-1G-ZX": {
+          "name": "Cisco 1000BASE-ZX SFP Module (Extended Range)",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseZX/Full"],
+          "media": "SMF",
+          "distance": "70km",
+          "dom": true
+        },
+        "SFP-10G-SR-S": {
+          "name": "Cisco 10GBASE-SR SFP+ Module (Short Range)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseSR/Full"],
+          "media": "MMF",
+          "distance": "300m",
+          "dom": true
+        },
+        "SFP-10G-LR-S": {
+          "name": "Cisco 10GBASE-LR SFP+ Module (Long Range)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseLR/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "SFP-10G-ER-S": {
+          "name": "Cisco 10GBASE-ER SFP+ Module (Extended Range)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseER/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "SFP-10G-ZR-S": {
+          "name": "Cisco 10GBASE-ZR SFP+ Module (ZR Range)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseZR/Full"],
+          "media": "SMF",
+          "distance": "80km",
+          "dom": true
+        },
+        "SFP-10G-T": {
+          "name": "Cisco 10GBASE-T SFP+ Module (Copper)",
+          "type": "SFP+",
+          "ports": [{"type": "RJ45", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseT/Full", "1000baseT/Full", "100baseT/Full"],
+          "media": "Copper",
+          "distance": "30m (10G), 100m (1G/100M)",
+          "dom": false
+        },
+        "SFP-10G-BXD": {
+          "name": "Cisco 10GBASE-BXD SFP+ Module (Bidirectional)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10Gbase-BX/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "SFP-10G-BXU": {
+          "name": "Cisco 10GBASE-BXU SFP+ Module (Bidirectional)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10Gbase-BX/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "SFP-25G-SR-S": {
+          "name": "Cisco 25GBASE-SR SFP28 Module (Short Range)",
+          "type": "SFP28",
+          "ports": [{"type": "LC", "max_speed": "25GbE"}],
+          "supported_modes": ["25GbaseSR/Full"],
+          "media": "MMF",
+          "distance": "70m (OM3), 100m (OM4)",
+          "dom": true
+        },
+        "SFP-25G-LR-S": {
+          "name": "Cisco 25GBASE-LR SFP28 Module (Long Range)",
+          "type": "SFP28",
+          "ports": [{"type": "LC", "max_speed": "25GbE"}],
+          "supported_modes": ["25GbaseLR/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "SFP-25G-ER-S": {
+          "name": "Cisco 25GBASE-ER SFP28 Module (Extended Range)",
+          "type": "SFP28",
+          "ports": [{"type": "LC", "max_speed": "25GbE"}],
+          "supported_modes": ["25GbaseER/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "SFP-25G-T": {
+          "name": "Cisco 25GBASE-T SFP28 Module (Copper)",
+          "type": "SFP28",
+          "ports": [{"type": "RJ45", "max_speed": "25GbE"}],
+          "supported_modes": ["25GbaseT/Full", "10GbaseT/Full", "1000baseT/Full"],
+          "media": "Copper",
+          "distance": "5m (25G), 30m (10G), 100m (1G)",
+          "dom": false
+        },
+        "QSFP-40G-SR4": {
+          "name": "Cisco 40GBASE-SR4 QSFP+ Module (Short Range)",
+          "type": "QSFP+",
+          "ports": [{"type": "MPO", "max_speed": "40GbE"}],
+          "supported_modes": ["40GbaseSR4/Full"],
+          "media": "MMF",
+          "distance": "100m (OM3), 150m (OM4)",
+          "dom": true
+        },
+        "QSFP-40G-LR4": {
+          "name": "Cisco 40GBASE-LR4 QSFP+ Module (Long Range)",
+          "type": "QSFP+",
+          "ports": [{"type": "LC", "max_speed": "40GbE"}],
+          "supported_modes": ["40GbaseLR4/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "QSFP-40G-ER4": {
+          "name": "Cisco 40GBASE-ER4 QSFP+ Module (Extended Range)",
+          "type": "QSFP+",
+          "ports": [{"type": "LC", "max_speed": "40GbE"}],
+          "supported_modes": ["40GbaseER4/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "QSFP-40G-CR4": {
+          "name": "Cisco 40GBASE-CR4 QSFP+ Module (Copper)",
+          "type": "QSFP+",
+          "ports": [{"type": "QSFP+", "max_speed": "40GbE"}],
+          "supported_modes": ["40GbaseCR4/Full"],
+          "media": "Copper",
+          "distance": "7m",
+          "dom": false
+        },
+        "QSFP-100G-SR4-S": {
+          "name": "Cisco 100GBASE-SR4 QSFP28 Module (Short Range)",
+          "type": "QSFP28",
+          "ports": [{"type": "MPO", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseSR4/Full"],
+          "media": "MMF",
+          "distance": "70m (OM3), 100m (OM4)",
+          "dom": true
+        },
+        "QSFP-100G-LR4-S": {
+          "name": "Cisco 100GBASE-LR4 QSFP28 Module (Long Range)",
+          "type": "QSFP28",
+          "ports": [{"type": "LC", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseLR4/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "QSFP-100G-ER4-S": {
+          "name": "Cisco 100GBASE-ER4 QSFP28 Module (Extended Range)",
+          "type": "QSFP28",
+          "ports": [{"type": "LC", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseER4/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "QSFP-100G-CR4": {
+          "name": "Cisco 100GBASE-CR4 QSFP28 Module (Copper)",
+          "type": "QSFP28",
+          "ports": [{"type": "QSFP28", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseCR4/Full"],
+          "media": "Copper",
+          "distance": "5m",
+          "dom": false
+        },
+        "QSFP-100G-PSM4": {
+          "name": "Cisco 100GBASE-PSM4 QSFP28 Module (Parallel Single Mode)",
+          "type": "QSFP28",
+          "ports": [{"type": "MPO", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbasePSM4/Full"],
+          "media": "SMF",
+          "distance": "500m",
+          "dom": true
+        },
+        "QSFP-100G-CWDM4": {
+          "name": "Cisco 100GBASE-CWDM4 QSFP28 Module (Coarse WDM)",
+          "type": "QSFP28",
+          "ports": [{"type": "LC", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseCWDM4/Full"],
+          "media": "SMF",
+          "distance": "2km",
+          "dom": true
+        }
+      }
+    },
+    "hp": {
+      "name": "Hewlett Packard Enterprise",
+      "modules": {
+        "J4858D": {
+          "name": "HP 1000BASE-SX SFP Module",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseSX/Full"],
+          "media": "MMF",
+          "distance": "550m",
+          "dom": false
+        },
+        "J8177C": {
+          "name": "HP 1000BASE-LX SFP Module",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseLX/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": false
+        },
+        "J9150D": {
+          "name": "HP 10GBASE-SR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseSR/Full"],
+          "media": "MMF",
+          "distance": "300m",
+          "dom": true
+        },
+        "J9151D": {
+          "name": "HP 10GBASE-LR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseLR/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "J9152D": {
+          "name": "HP 1000BASE-T SFP Module (Copper)",
+          "type": "SFP",
+          "ports": [{"type": "RJ45", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseT/Full", "100baseT/Full", "10baseT/Full"],
+          "media": "Copper",
+          "distance": "100m",
+          "dom": false
+        },
+        "J9153D": {
+          "name": "HP 1000BASE-LH SFP Module (Long Haul)",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseLH/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "J9154D": {
+          "name": "HP 1000BASE-ZX SFP Module (Extended Range)",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseZX/Full"],
+          "media": "SMF",
+          "distance": "70km",
+          "dom": true
+        },
+        "J9155D": {
+          "name": "HP 10GBASE-ER SFP+ Module (Extended Range)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseER/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "J9156D": {
+          "name": "HP 10GBASE-ZR SFP+ Module (ZR Range)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseZR/Full"],
+          "media": "SMF",
+          "distance": "80km",
+          "dom": true
+        },
+        "J9157D": {
+          "name": "HP 10GBASE-T SFP+ Module (Copper)",
+          "type": "SFP+",
+          "ports": [{"type": "RJ45", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseT/Full", "1000baseT/Full", "100baseT/Full"],
+          "media": "Copper",
+          "distance": "30m (10G), 100m (1G/100M)",
+          "dom": false
+        },
+        "J9158D": {
+          "name": "HP 10GBASE-BXD SFP+ Module (Bidirectional)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10Gbase-BX/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "J9159D": {
+          "name": "HP 10GBASE-BXU SFP+ Module (Bidirectional)",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10Gbase-BX/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "J9160D": {
+          "name": "HP 25GBASE-SR SFP28 Module (Short Range)",
+          "type": "SFP28",
+          "ports": [{"type": "LC", "max_speed": "25GbE"}],
+          "supported_modes": ["25GbaseSR/Full"],
+          "media": "MMF",
+          "distance": "70m (OM3), 100m (OM4)",
+          "dom": true
+        },
+        "J9161D": {
+          "name": "HP 25GBASE-LR SFP28 Module (Long Range)",
+          "type": "SFP28",
+          "ports": [{"type": "LC", "max_speed": "25GbE"}],
+          "supported_modes": ["25GbaseLR/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "J9162D": {
+          "name": "HP 25GBASE-ER SFP28 Module (Extended Range)",
+          "type": "SFP28",
+          "ports": [{"type": "LC", "max_speed": "25GbE"}],
+          "supported_modes": ["25GbaseER/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "J9163D": {
+          "name": "HP 25GBASE-T SFP28 Module (Copper)",
+          "type": "SFP28",
+          "ports": [{"type": "RJ45", "max_speed": "25GbE"}],
+          "supported_modes": ["25GbaseT/Full", "10GbaseT/Full", "1000baseT/Full"],
+          "media": "Copper",
+          "distance": "5m (25G), 30m (10G), 100m (1G)",
+          "dom": false
+        },
+        "J9164D": {
+          "name": "HP 40GBASE-SR4 QSFP+ Module (Short Range)",
+          "type": "QSFP+",
+          "ports": [{"type": "MPO", "max_speed": "40GbE"}],
+          "supported_modes": ["40GbaseSR4/Full"],
+          "media": "MMF",
+          "distance": "100m (OM3), 150m (OM4)",
+          "dom": true
+        },
+        "J9165D": {
+          "name": "HP 40GBASE-LR4 QSFP+ Module (Long Range)",
+          "type": "QSFP+",
+          "ports": [{"type": "LC", "max_speed": "40GbE"}],
+          "supported_modes": ["40GbaseLR4/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "J9166D": {
+          "name": "HP 40GBASE-ER4 QSFP+ Module (Extended Range)",
+          "type": "QSFP+",
+          "ports": [{"type": "LC", "max_speed": "40GbE"}],
+          "supported_modes": ["40GbaseER4/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "J9167D": {
+          "name": "HP 40GBASE-CR4 QSFP+ Module (Copper)",
+          "type": "QSFP+",
+          "ports": [{"type": "QSFP+", "max_speed": "40GbE"}],
+          "supported_modes": ["40GbaseCR4/Full"],
+          "media": "Copper",
+          "distance": "7m",
+          "dom": false
+        },
+        "J9168D": {
+          "name": "HP 100GBASE-SR4 QSFP28 Module (Short Range)",
+          "type": "QSFP28",
+          "ports": [{"type": "MPO", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseSR4/Full"],
+          "media": "MMF",
+          "distance": "70m (OM3), 100m (OM4)",
+          "dom": true
+        },
+        "J9169D": {
+          "name": "HP 100GBASE-LR4 QSFP28 Module (Long Range)",
+          "type": "QSFP28",
+          "ports": [{"type": "LC", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseLR4/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "J9170D": {
+          "name": "HP 100GBASE-ER4 QSFP28 Module (Extended Range)",
+          "type": "QSFP28",
+          "ports": [{"type": "LC", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseER4/Full"],
+          "media": "SMF",
+          "distance": "40km",
+          "dom": true
+        },
+        "J9171D": {
+          "name": "HP 100GBASE-CR4 QSFP28 Module (Copper)",
+          "type": "QSFP28",
+          "ports": [{"type": "QSFP28", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseCR4/Full"],
+          "media": "Copper",
+          "distance": "5m",
+          "dom": false
+        },
+        "J9172D": {
+          "name": "HP 100GBASE-PSM4 QSFP28 Module (Parallel Single Mode)",
+          "type": "QSFP28",
+          "ports": [{"type": "MPO", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbasePSM4/Full"],
+          "media": "SMF",
+          "distance": "500m",
+          "dom": true
+        },
+        "J9173D": {
+          "name": "HP 100GBASE-CWDM4 QSFP28 Module (Coarse WDM)",
+          "type": "QSFP28",
+          "ports": [{"type": "LC", "max_speed": "100GbE"}],
+          "supported_modes": ["100GbaseCWDM4/Full"],
+          "media": "SMF",
+          "distance": "2km",
+          "dom": true
+        }
+      }
+    },
+    "dell": {
+      "name": "Dell Technologies",
+      "modules": {
+        "407-BBOU": {
+          "name": "Dell 10GBASE-SR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseSR/Full"],
+          "media": "MMF",
+          "distance": "300m",
+          "dom": true
+        },
+        "407-BBOP": {
+          "name": "Dell 10GBASE-LR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseLR/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        },
+        "407-BBZT": {
+          "name": "Dell 1000BASE-T SFP Module",
+          "type": "SFP",
+          "ports": [{"type": "RJ45", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseT/Full"],
+          "media": "Copper",
+          "distance": "100m",
+          "dom": false
+        }
+      }
+    },
+    "lenovo": {
+      "name": "Lenovo Group Limited",
+      "modules": {
+        "00FE333": {
+          "name": "Lenovo 10GBASE-SR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseSR/Full"],
+          "media": "MMF",
+          "distance": "300m",
+          "dom": true
+        },
+        "00FE334": {
+          "name": "Lenovo 10GBASE-LR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseLR/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        }
+      }
+    },
+    "fortinet": {
+      "name": "Fortinet, Inc.",
+      "modules": {
+        "FG-TRAN-GC": {
+          "name": "Fortinet 1000BASE-T SFP Module",
+          "type": "SFP",
+          "ports": [{"type": "RJ45", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseT/Full"],
+          "media": "Copper",
+          "distance": "100m",
+          "dom": false
+        },
+        "FG-TRAN-SX": {
+          "name": "Fortinet 1000BASE-SX SFP Module",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseSX/Full"],
+          "media": "MMF",
+          "distance": "550m",
+          "dom": false
+        },
+        "FG-TRAN-LX": {
+          "name": "Fortinet 1000BASE-LX SFP Module",
+          "type": "SFP",
+          "ports": [{"type": "LC", "max_speed": "1GbE"}],
+          "supported_modes": ["1000baseLX/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": false
+        },
+        "FG-TRAN-SFP+SR": {
+          "name": "Fortinet 10GBASE-SR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseSR/Full"],
+          "media": "MMF",
+          "distance": "300m",
+          "dom": true
+        },
+        "FG-TRAN-SFP+LR": {
+          "name": "Fortinet 10GBASE-LR SFP+ Module",
+          "type": "SFP+",
+          "ports": [{"type": "LC", "max_speed": "10GbE"}],
+          "supported_modes": ["10GbaseLR/Full"],
+          "media": "SMF",
+          "distance": "10km",
+          "dom": true
+        }
+      }
+    }
+  },
+  "port_types": {
+    "RJ45": {
+      "description": "Registered Jack 45 - Twisted Pair Ethernet",
+      "standards": ["1GbE", "2.5GbE", "5GbE", "10GbE", "25GbE", "40GbE", "100GbE"],
+      "cable_types": ["Cat5e", "Cat6", "Cat6a", "Cat7", "Cat8"],
+      "max_distance": {
+        "1GbE": "100m",
+        "2.5GbE": "100m",
+        "5GbE": "100m",
+        "10GbE": "100m",
+        "25GbE": "30m",
+        "40GbE": "30m",
+        "100GbE": "30m"
+      }
+    },
+    "SFP": {
+      "description": "Small Form-factor Pluggable - 1GbE Fiber/Copper",
+      "standards": ["1GbE"],
+      "cable_types": ["Fiber", "Copper"],
+      "max_distance": {
+        "1GbE": "10km (fiber), 100m (copper)"
+      }
+    },
+    "SFP+": {
+      "description": "Enhanced Small Form-factor Pluggable - 10GbE Fiber/Copper",
+      "standards": ["1GbE", "10GbE"],
+      "cable_types": ["Fiber", "Copper"],
+      "max_distance": {
+        "1GbE": "10km (fiber), 100m (copper)",
+        "10GbE": "10km (fiber), 100m (copper)"
+      }
+    },
+    "SFP28": {
+      "description": "25G Small Form-factor Pluggable - 25GbE Fiber/Copper",
+      "standards": ["1GbE", "10GbE", "25GbE"],
+      "cable_types": ["Fiber", "Copper"],
+      "max_distance": {
+        "1GbE": "10km (fiber), 100m (copper)",
+        "10GbE": "10km (fiber), 100m (copper)",
+        "25GbE": "10km (fiber), 100m (copper)"
+      }
+    },
+    "QSFP+": {
+      "description": "Quad Small Form-factor Pluggable Plus - 40GbE Fiber/Copper",
+      "standards": ["10GbE", "40GbE"],
+      "cable_types": ["Fiber", "Copper"],
+      "max_distance": {
+        "10GbE": "10km (fiber), 100m (copper)",
+        "40GbE": "10km (fiber), 100m (copper)"
+      }
+    },
+    "QSFP28": {
+      "description": "Quad Small Form-factor Pluggable 28 - 100GbE Fiber/Copper",
+      "standards": ["10GbE", "25GbE", "40GbE", "100GbE"],
+      "cable_types": ["Fiber", "Copper"],
+      "max_distance": {
+        "10GbE": "10km (fiber), 100m (copper)",
+        "25GbE": "10km (fiber), 100m (copper)",
+        "40GbE": "10km (fiber), 100m (copper)",
+        "100GbE": "10km (fiber), 100m (copper)"
+      }
+    }
+  },
+  "speed_standards": {
+    "1GbE": {
+      "description": "1 Gigabit Ethernet",
+      "data_rate": "1 Gbps",
+      "common_standards": ["1000baseT", "1000baseX", "1000baseSX", "1000baseLX"],
+      "year_introduced": 1998
+    },
+    "2.5GbE": {
+      "description": "2.5 Gigabit Ethernet",
+      "data_rate": "2.5 Gbps",
+      "common_standards": ["2500baseT"],
+      "year_introduced": 2016
+    },
+    "5GbE": {
+      "description": "5 Gigabit Ethernet",
+      "data_rate": "5 Gbps",
+      "common_standards": ["5000baseT"],
+      "year_introduced": 2016
+    },
+    "10GbE": {
+      "description": "10 Gigabit Ethernet",
+      "data_rate": "10 Gbps",
+      "common_standards": ["10000baseT", "10000baseSR", "10000baseLR", "10000baseCR", "10000baseCX4"],
+      "year_introduced": 2002
+    },
+    "25GbE": {
+      "description": "25 Gigabit Ethernet",
+      "data_rate": "25 Gbps",
+      "common_standards": ["25000baseSR", "25000baseLR", "25000baseCR", "25000baseKR"],
+      "year_introduced": 2014
+    },
+    "40GbE": {
+      "description": "40 Gigabit Ethernet",
+      "data_rate": "40 Gbps",
+      "common_standards": ["40000baseSR4", "40000baseLR4", "40000baseCR4"],
+      "year_introduced": 2010
+    },
+    "100GbE": {
+      "description": "100 Gigabit Ethernet",
+      "data_rate": "100 Gbps",
+      "common_standards": ["100000baseSR4", "100000baseLR4", "100000baseCR4", "100000baseKR4"],
+      "year_introduced": 2010
+    }
+  }
+} 

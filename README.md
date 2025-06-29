@@ -4,9 +4,15 @@ A modern Next-Generation Firewall application built with Rust, featuring a web-b
 
 **Contact:** wtf@boringlab.io
 
+## Sample Demo Dashboard
+
+![Dashboard Sample](examples/dashboard-sample-06-30-03.00.07.png)
+
+The dashboard provides a modern, enterprise-grade interface for firewall management with real-time monitoring, rule configuration, and network interface management.
+
 ## Features
 
-- **Web Dashboard**: Modern, responsive interface with Fortigate/FortiOS-style design
+- **Web Dashboard**: Modern, responsive interface with enterprise firewall-style design
 - **Firewall Rules Management**: Add, delete, and toggle firewall rules
 - **Network Interface Management**: Configure WAN/LAN interfaces
 - **Real-time Statistics**: Monitor traffic and security events

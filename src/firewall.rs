@@ -4,6 +4,10 @@ use std::time::Instant;
 use tokio::sync::RwLock;
 use crate::models::{FirewallRule, FirewallStatus, FirewallStatistics, CreateRuleRequest};
 use tracing::{info, warn};
+use serde::{Deserialize, Serialize};
+use chrono::{DateTime, Utc};
+use uuid::Uuid;
+use crate::logging::{LogManager, LogType, LogMetadata};
 
 /// Main firewall implementation with rule management and packet processing
 pub struct Firewall {
@@ -11,6 +15,7 @@ pub struct Firewall {
     statistics: Arc<Mutex<FirewallStatistics>>,
     start_time: Instant,
     enabled: Arc<RwLock<bool>>,
+    log_manager: Option<Arc<LogManager>>,
 }
 
 impl Firewall {
@@ -29,6 +34,7 @@ impl Firewall {
             })),
             start_time: Instant::now(),
             enabled: Arc::new(RwLock::new(true)),
+            log_manager: None,
         };
 
         // Add default rules for basic security
@@ -84,6 +90,30 @@ impl Firewall {
         let mut rules = self.rules.write().await;
         rules.insert(rule.id.clone(), rule.clone());
         info!("Added firewall rule: {}", rule.name);
+
+        // Log the rule addition
+        if let Some(log_manager) = &self.log_manager {
+            let metadata = LogMetadata {
+                source: "firewall".to_string(),
+                component: "rule_management".to_string(),
+                session_id: None,
+                user: Some("admin".to_string()),
+                ip_address: Some("127.0.0.1".to_string()),
+            };
+
+            let log_data = serde_json::json!({
+                "operation": "add_rule",
+                "rule_id": rule.id,
+                "rule_name": rule.name,
+                "action": format!("{:?}", rule.action),
+                "protocol": format!("{:?}", rule.protocol),
+                "source_ip": rule.source_ip,
+                "destination_ip": rule.destination_ip,
+                "enabled": rule.enabled
+            });
+
+            log_manager.log(LogType::System, log_data, metadata).await;
+        }
     }
 
     /// Remove a firewall rule by ID
@@ -91,6 +121,26 @@ impl Firewall {
         let mut rules = self.rules.write().await;
         if let Some(rule) = rules.remove(rule_id) {
             info!("Removed firewall rule: {}", rule.name);
+
+            // Log the rule removal
+            if let Some(log_manager) = &self.log_manager {
+                let metadata = LogMetadata {
+                    source: "firewall".to_string(),
+                    component: "rule_management".to_string(),
+                    session_id: None,
+                    user: Some("admin".to_string()),
+                    ip_address: Some("127.0.0.1".to_string()),
+                };
+
+                let log_data = serde_json::json!({
+                    "operation": "remove_rule",
+                    "rule_id": rule_id,
+                    "success": true
+                });
+
+                log_manager.log(LogType::System, log_data, metadata).await;
+            }
+
             true
         } else {
             warn!("Attempted to remove non-existent rule: {}", rule_id);
@@ -117,6 +167,28 @@ impl Firewall {
             rule.enabled = !rule.enabled;
             rule.updated_at = chrono::Utc::now();
             info!("Toggled rule {} to {}", rule.name, if rule.enabled { "enabled" } else { "disabled" });
+
+            // Log the rule toggle
+            if let Some(log_manager) = &self.log_manager {
+                let metadata = LogMetadata {
+                    source: "firewall".to_string(),
+                    component: "rule_management".to_string(),
+                    session_id: None,
+                    user: Some("admin".to_string()),
+                    ip_address: Some("127.0.0.1".to_string()),
+                };
+
+                let log_data = serde_json::json!({
+                    "operation": "toggle_rule",
+                    "rule_id": rule_id,
+                    "rule_name": rule.name,
+                    "new_status": rule.enabled,
+                    "success": true
+                });
+
+                log_manager.log(LogType::System, log_data, metadata).await;
+            }
+
             true
         } else {
             false
@@ -251,12 +323,54 @@ impl Firewall {
     pub async fn enable(&mut self) {
         *self.enabled.write().await = true;
         info!("Firewall enabled");
+
+        // Log the firewall enable
+        if let Some(log_manager) = &self.log_manager {
+            let metadata = LogMetadata {
+                source: "firewall".to_string(),
+                component: "system".to_string(),
+                session_id: None,
+                user: Some("admin".to_string()),
+                ip_address: Some("127.0.0.1".to_string()),
+            };
+
+            let log_data = serde_json::json!({
+                "operation": "enable_firewall",
+                "status": "enabled",
+                "timestamp": chrono::Utc::now().to_rfc3339()
+            });
+
+            log_manager.log(LogType::System, log_data, metadata).await;
+        }
     }
 
     /// Disable the firewall
     pub async fn disable(&mut self) {
         *self.enabled.write().await = false;
         info!("Firewall disabled");
+
+        // Log the firewall disable
+        if let Some(log_manager) = &self.log_manager {
+            let metadata = LogMetadata {
+                source: "firewall".to_string(),
+                component: "system".to_string(),
+                session_id: None,
+                user: Some("admin".to_string()),
+                ip_address: Some("127.0.0.1".to_string()),
+            };
+
+            let log_data = serde_json::json!({
+                "operation": "disable_firewall",
+                "status": "disabled",
+                "timestamp": chrono::Utc::now().to_rfc3339()
+            });
+
+            log_manager.log(LogType::System, log_data, metadata).await;
+        }
+    }
+
+    pub fn set_log_manager(&mut self, log_manager: Arc<LogManager>) {
+        self.log_manager = Some(log_manager);
     }
 }
 
