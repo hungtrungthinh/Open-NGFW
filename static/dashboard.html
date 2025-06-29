@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open-NGFW Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #f4f6fa; }
+        .sidebar {
+            background: #23272f;
+            color: #fff;
+            min-width: 220px;
+            max-width: 240px;
+            height: 100vh;
+        }
+        .sidebar .active, .sidebar .menu-item:hover {
+            background: #2d323c;
+            color: #38bdf8;
+        }
+        .sidebar .menu-item {
+            transition: all 0.2s;
+        }
+        .sidebar .menu-icon {
+            width: 22px;
+        }
+        .sidebar .submenu {
+            background: #23272f;
+            margin-left: 32px;
+            font-size: 0.95em;
+        }
+        .sidebar .submenu li {
+            padding-left: 16px;
+        }
+        .main-content {
+            margin-left: 240px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 1.5rem;
+        }
+        .widget-title {
+            font-weight: 600;
+            color: #23272f;
+        }
+        .hidden-section { display: none; }
+    </style>
+</head>
+<body class="flex">
+    <!-- Sidebar -->
+    <aside class="sidebar flex flex-col py-6 px-3 fixed top-0 left-0 bottom-0 z-40">
+        <div class="flex items-center mb-8">
+            <i class="fas fa-shield-alt text-2xl text-cyan-400 mr-3"></i>
+            <span class="text-xl font-bold tracking-wide">Open-NGFW</span>
+        </div>
+        <nav class="flex-1">
+            <ul class="space-y-1" id="sidebarMenu">
+                <li class="menu-item active" data-section="dashboard"><i class="fas fa-tachometer-alt menu-icon mr-3"></i> Dashboard</li>
+                <li class="menu-item" data-section="status"><i class="fas fa-info-circle menu-icon mr-3"></i> Status</li>
+                <li class="menu-item" data-section="wan"><i class="fas fa-globe menu-icon mr-3"></i> Internet / WAN</li>
+                <li class="menu-item has-submenu" data-section="policy">
+                    <div class="flex items-center justify-between cursor-pointer">
+                        <span><i class="fas fa-list-check menu-icon mr-3"></i> Policy / Rules</span>
+                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+                    </div>
+                    <ul class="submenu space-y-1 hidden">
+                        <li class="submenu-item" data-section="rules-list">Rules List</li>
+                        <li class="submenu-item" data-section="rules-add">Add New Rule</li>
+                    </ul>
+                </li>
+                <li class="menu-item has-submenu" data-section="ips">
+                    <div class="flex items-center justify-between cursor-pointer">
+                        <span><i class="fas fa-shield-virus menu-icon mr-3"></i> IPS / IDS</span>
+                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+                    </div>
+                    <ul class="submenu space-y-1 hidden">
+                        <li class="submenu-item" data-section="ips-stats">Statistics</li>
+                        <li class="submenu-item" data-section="ips-log">Attack Logs</li>
+                    </ul>
+                </li>
+                <li class="menu-item has-submenu" data-section="bandwidth">
+                    <div class="flex items-center justify-between cursor-pointer">
+                        <span><i class="fas fa-network-wired menu-icon mr-3"></i> Bandwidth</span>
+                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+                    </div>
+                    <ul class="submenu space-y-1 hidden">
+                        <li class="submenu-item" data-section="bw-overview">Overview</li>
+                        <li class="submenu-item" data-section="bw-interface">By Interface</li>
+                    </ul>
+                </li>
+                <li class="menu-item has-submenu" data-section="wifi">
+                    <div class="flex items-center justify-between cursor-pointer">
+                        <span><i class="fas fa-wifi menu-icon mr-3"></i> Wi-Fi</span>
+                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+                    </div>
+                    <ul class="submenu space-y-1 hidden">
+                        <li class="submenu-item" data-section="wifi-ssid">SSID List</li>
+                        <li class="submenu-item" data-section="wifi-client">Clients</li>
+                    </ul>
+                </li>
+                <li class="menu-item has-submenu" data-section="system">
+                    <div class="flex items-center justify-between cursor-pointer">
+                        <span><i class="fas fa-cogs menu-icon mr-3"></i> System</span>
+                        <i class="fas fa-chevron-down ml-2 submenu-arrow"></i>
+                    </div>
+                    <ul class="submenu space-y-1 hidden">
+                        <li class="submenu-item" data-section="sys-info">System Info</li>
+                        <li class="submenu-item" data-section="sys-user">User Management</li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div class="mt-8 text-xs text-gray-400 text-center">&copy; 2024 Open-NGFW</div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content flex-1 min-h-screen p-8">
+        <!-- Top Bar -->
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-500">User: <b>admin</b></span>
+                <button class="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <section id="section-dashboard">
+            <!-- Widget Row 1: System Info, WAN, Rules, Bandwidth -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="card">
+                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-server mr-2 text-cyan-500"></i> System Info</div>
+                    <div class="text-sm text-gray-700">
+                        <div><b>Hostname:</b> Open-NGFW</div>
+                        <div><b>Uptime:</b> <span id="sysUptime">--</span></div>
+                        <div><b>Mode:</b> NAT</div>
+                        <div><b>IP:</b> <span id="sysIP">--</span></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-globe mr-2 text-green-500"></i> Internet / WAN</div>
+                    <div class="text-sm text-gray-700">
+                        <div><b>Status:</b> <span id="wanStatus">--</span></div>
+                        <div><b>IP:</b> <span id="wanIP">--</span></div>
+                        <div><b>Gateway:</b> <span id="wanGW">--</span></div>
+                        <div><b>Type:</b> <span id="wanType">--</span></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-list-check mr-2 text-yellow-500"></i> Rules</div>
+                    <div class="text-sm text-gray-700">
+                        <div><b>Active:</b> <span id="rulesActive">--</span></div>
+                        <div><b>Total:</b> <span id="rulesTotal">--</span></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-network-wired mr-2 text-purple-500"></i> Bandwidth</div>
+                    <div class="text-sm text-gray-700">
+                        <div><b>Download:</b> <span id="bwDown">--</span></div>
+                        <div><b>Upload:</b> <span id="bwUp">--</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget Row 2: Security, Traffic, Chart -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="card col-span-2">
+                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-chart-pie mr-2 text-pink-500"></i> Traffic Statistics</div>
+                    <canvas id="trafficChart" height="120"></canvas>
+                </div>
+                <div class="card">
+                    <div class="widget-title mb-2 flex items-center"><i class="fas fa-shield-virus mr-2 text-red-500"></i> Security</div>
+                    <div class="text-sm text-gray-700">
+                        <div><b>Threats Blocked:</b> <span id="threatsBlocked">--</span></div>
+                        <div><b>Intrusions:</b> <span id="intrusions">--</span></div>
+                        <div><b>Malware:</b> <span id="malware">--</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Status Section -->
+        <section id="section-status" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-info-circle mr-2 text-blue-500"></i> System Status</div>
+                <div class="text-gray-700">Display system status, firewall status, uptime, and other system information...</div>
+            </div>
+        </section>
+
+        <!-- WAN Section -->
+        <section id="section-wan" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-globe mr-2 text-green-500"></i> Internet / WAN</div>
+                <div class="text-gray-700">Configure and monitor Internet connection status (PPPoE, Static IP, DHCP)...</div>
+            </div>
+        </section>
+
+        <!-- Policy/Rules List Section -->
+        <section id="section-rules-list" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-list-check mr-2 text-yellow-500"></i> Rules List</div>
+                <div class="text-gray-700">Table displaying all firewall rules...</div>
+            </div>
+        </section>
+
+        <!-- Policy/Rules Add Section -->
+        <section id="section-rules-add" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-plus mr-2 text-yellow-500"></i> Add New Rule</div>
+                <div class="text-gray-700">Form to add new firewall rule...</div>
+            </div>
+        </section>
+
+        <!-- IPS/IDS Stats Section -->
+        <section id="section-ips-stats" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-chart-bar mr-2 text-red-500"></i> IPS/IDS Statistics</div>
+                <div class="text-gray-700">Attack statistics, alerts, and security metrics...</div>
+            </div>
+        </section>
+
+        <!-- IPS/IDS Log Section -->
+        <section id="section-ips-log" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-bug mr-2 text-red-500"></i> Attack Logs</div>
+                <div class="text-gray-700">Table displaying IPS/IDS attack logs...</div>
+            </div>
+        </section>
+
+        <!-- Bandwidth Overview Section -->
+        <section id="section-bw-overview" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-network-wired mr-2 text-purple-500"></i> Bandwidth Overview</div>
+                <div class="text-gray-700">Overall bandwidth statistics and usage...</div>
+            </div>
+        </section>
+
+        <!-- Bandwidth Interface Section -->
+        <section id="section-bw-interface" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-network-wired mr-2 text-purple-500"></i> Bandwidth by Interface</div>
+                <div class="text-gray-700">Bandwidth statistics per network interface...</div>
+            </div>
+        </section>
+
+        <!-- Wi-Fi SSID Section -->
+        <section id="section-wifi-ssid" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-wifi mr-2 text-blue-500"></i> SSID List</div>
+                <div class="text-gray-700">List of Wi-Fi SSIDs and their configurations...</div>
+            </div>
+        </section>
+
+        <!-- Wi-Fi Client Section -->
+        <section id="section-wifi-client" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-user-friends mr-2 text-blue-500"></i> Wi-Fi Clients</div>
+                <div class="text-gray-700">List of clients currently connected to Wi-Fi...</div>
+            </div>
+        </section>
+
+        <!-- System Info Section -->
+        <section id="section-sys-info" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-cogs mr-2 text-gray-500"></i> System Information</div>
+                <div class="text-gray-700">Hardware information, operating system details, and system resources...</div>
+            </div>
+        </section>
+
+        <!-- System User Section -->
+        <section id="section-sys-user" class="hidden-section">
+            <div class="card mb-8">
+                <div class="widget-title mb-4 flex items-center"><i class="fas fa-user-cog mr-2 text-gray-500"></i> User Management</div>
+                <div class="text-gray-700">Manage user accounts and permissions...</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Sidebar active state, submenu logic, section switching
+        const menuItems = document.querySelectorAll('.sidebar .menu-item');
+        const submenuArrows = document.querySelectorAll('.sidebar .has-submenu .submenu-arrow');
+        const submenuItems = document.querySelectorAll('.sidebar .submenu-item');
+        const sections = document.querySelectorAll('main > section');
+
+        function showSection(sectionId) {
+            sections.forEach(sec => sec.classList.add('hidden-section'));
+            const sec = document.getElementById('section-' + sectionId);
+            if (sec) sec.classList.remove('hidden-section');
+        }
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                // If it's a submenu, just toggle
+                if (item.classList.contains('has-submenu')) {
+                    const submenu = item.querySelector('.submenu');
+                    submenu.classList.toggle('hidden');
+                    item.querySelector('.submenu-arrow').classList.toggle('fa-chevron-down');
+                    item.querySelector('.submenu-arrow').classList.toggle('fa-chevron-up');
+                    return;
+                }
+                menuItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                showSection(item.getAttribute('data-section'));
+            });
+        });
+        submenuItems.forEach(sub => {
+            sub.addEventListener('click', function(e) {
+                menuItems.forEach(i => i.classList.remove('active'));
+                sub.closest('.has-submenu').classList.add('active');
+                showSection(sub.getAttribute('data-section'));
+            });
+        });
+        // Default to dashboard
+        showSection('dashboard');
+
+        // Chart.js Traffic Chart (demo data)
+        const trafficChart = new Chart(document.getElementById('trafficChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00"],
+                datasets: [
+                    {
+                        label: 'Download',
+                        data: [120, 150, 180, 100, 90, 130, 170],
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56,189,248,0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Upload',
+                        data: [80, 60, 100, 70, 60, 90, 110],
+                        borderColor: '#f59e42',
+                        backgroundColor: 'rgba(245,158,66,0.1)',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,12 @@
+/Users/thinh.nguyen/Cursor-Workspace/Rust/Firewall-app/target/debug/deps/libnix-d3962ec24ce28792.rmeta: /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/lib.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/macros.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/errno.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/fcntl.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/sys/mod.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/sys/signal.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/sys/time.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/unistd.rs
+
+/Users/thinh.nguyen/Cursor-Workspace/Rust/Firewall-app/target/debug/deps/nix-d3962ec24ce28792.d: /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/lib.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/macros.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/errno.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/fcntl.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/sys/mod.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/sys/signal.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/sys/time.rs /Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/unistd.rs
+
+/Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/lib.rs:
+/Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/macros.rs:
+/Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/errno.rs:
+/Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/fcntl.rs:
+/Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/sys/mod.rs:
+/Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/sys/signal.rs:
+/Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/sys/time.rs:
+/Users/thinh.nguyen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nix-0.27.1/src/unistd.rs:

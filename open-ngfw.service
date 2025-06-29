@@ -1,0 +1,34 @@
+[Unit]
+Description=Open-NGFW Next-Generation Firewall
+After=network.target
+
+[Service]
+Type=simple
+User=open-ngfw
+Group=open-ngfw
+WorkingDirectory=/opt/open-ngfw
+ExecStart=/opt/open-ngfw/open-ngfw
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=open-ngfw
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/open-ngfw/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+# Contact: wtf@boringlab.io 

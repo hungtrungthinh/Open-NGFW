@@ -1,0 +1,1 @@
+fn(axum::extract::State<Arc<std::sync::Mutex<Firewall>>>, axum::extract::Path<std::string::String>) -> impl std::future::Future<Output = Result<Json<serde_json::Value>, axum::http::StatusCode>> {toggle_rule}

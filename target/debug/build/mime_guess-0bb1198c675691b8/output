@@ -1,0 +1,1 @@
+cargo:rustc-env=MIME_TYPES_GENERATED_PATH=/Users/thinh.nguyen/Cursor-Workspace/Rust/Firewall-app/target/debug/build/mime_guess-0bb1198c675691b8/out/mime_types_generated.rs

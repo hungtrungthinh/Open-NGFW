@@ -1,0 +1,1 @@
+fn(axum::extract::State<Arc<std::sync::Mutex<Firewall>>>) -> impl std::future::Future<Output = impl IntoResponse> {get_statistics}

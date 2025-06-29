@@ -1,0 +1,1 @@
+fn(axum::extract::State<Arc<std::sync::Mutex<Firewall>>>, Json<CreateRuleRequest>) -> impl std::future::Future<Output = impl IntoResponse> {add_rule}

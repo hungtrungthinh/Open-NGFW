@@ -1,0 +1,14 @@
+target/
+.git/
+.gitignore
+README.md
+*.md
+.vscode/
+.idea/
+*.log
+dist/
+Dockerfile
+.dockerignore
+open-ngfw.service
+install.sh
+build-release.sh 

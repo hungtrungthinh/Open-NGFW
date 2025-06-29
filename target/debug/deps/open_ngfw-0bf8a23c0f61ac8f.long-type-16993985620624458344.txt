@@ -1,0 +1,1 @@
+fn(axum::extract::State<Arc<tokio::sync::RwLock<Firewall>>>) -> impl std::future::Future<Output = impl IntoResponse> {toggle_firewall}
