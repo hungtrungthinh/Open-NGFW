@@ -1,0 +1,87 @@
+# macOS system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Rust build artifacts
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Log files
+*.log
+logs/
+
+# Environment variables and secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Configuration files with sensitive data
+config/local.toml
+config/production.toml
+*.key
+*.pem
+*.crt
+*.p12
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Compiled binaries (except release)
+target/debug/
+target/examples/
+
+# Documentation build
+docs/_build/
+
+# Coverage reports
+coverage/
+*.profraw
+
+# Package files
+*.tar.gz
+*.zip
+*.deb
+*.rpm
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Systemd service files (if they contain sensitive data)
+*.service.local 
