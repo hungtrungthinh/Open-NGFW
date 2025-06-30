@@ -6,7 +6,7 @@
 -- ============================================================================
 
 -- System configuration and basic info
-CREATE TABLE system_config (
+CREATE TABLE IF NOT EXISTS system_config (
     id INTEGER PRIMARY KEY,
     hostname TEXT NOT NULL DEFAULT 'Open-NGFW',
     serial_number TEXT NOT NULL DEFAULT 'NGW1234567890123',
@@ -22,7 +22,7 @@ CREATE TABLE system_config (
 );
 
 -- System licenses
-CREATE TABLE system_licenses (
+CREATE TABLE IF NOT EXISTS system_licenses (
     id INTEGER PRIMARY KEY,
     license_type TEXT NOT NULL, -- 'enterprise', 'cloud', 'sandbox', etc.
     license_key TEXT NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE system_licenses (
 );
 
 -- System performance metrics
-CREATE TABLE system_metrics (
+CREATE TABLE IF NOT EXISTS system_metrics (
     id INTEGER PRIMARY KEY,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     cpu_usage REAL, -- percentage
@@ -52,7 +52,7 @@ CREATE TABLE system_metrics (
 -- ============================================================================
 
 -- Administrator accounts
-CREATE TABLE administrators (
+CREATE TABLE IF NOT EXISTS administrators (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE administrators (
 );
 
 -- User groups
-CREATE TABLE user_groups (
+CREATE TABLE IF NOT EXISTS user_groups (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     description TEXT,
@@ -78,7 +78,7 @@ CREATE TABLE user_groups (
 );
 
 -- User group assignments
-CREATE TABLE user_group_assignments (
+CREATE TABLE IF NOT EXISTS user_group_assignments (
     id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
     group_id INTEGER NOT NULL,
@@ -92,27 +92,38 @@ CREATE TABLE user_group_assignments (
 -- ============================================================================
 
 -- Network interfaces
-CREATE TABLE network_interfaces (
-    id INTEGER PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL, -- 'port1', 'port2', 'wan1', 'lan1', etc.
+CREATE TABLE IF NOT EXISTS network_interfaces (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
     alias TEXT,
-    type TEXT NOT NULL, -- 'physical', 'vlan', 'aggregate', 'tunnel'
-    status TEXT NOT NULL DEFAULT 'down', -- 'up', 'down', 'disabled'
-    ip_address TEXT,
-    netmask TEXT,
-    gateway TEXT,
-    mtu INTEGER DEFAULT 1500,
-    speed INTEGER, -- in Mbps
-    duplex TEXT, -- 'full', 'half', 'auto'
-    vlan_id INTEGER,
-    zone_id INTEGER,
-    description TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    interface_type TEXT NOT NULL, -- Physical, VLAN, etc.
+    vrf_id INTEGER DEFAULT 0,
+    role TEXT, -- WAN, LAN, DMZ, etc.
+    bandwidth_up INTEGER DEFAULT 0,
+    bandwidth_down INTEGER DEFAULT 0,
+    addressing_mode TEXT NOT NULL, -- Manual, DHCP, PPPoE
+    status TEXT, -- Connected, Disconnected
+    manual_ip TEXT,
+    manual_netmask TEXT,
+    manual_gateway TEXT,
+    manual_dns TEXT,
+    dhcp_ip TEXT,
+    dhcp_netmask TEXT,
+    dhcp_gateway TEXT,
+    dhcp_dns TEXT,
+    pppoe_username TEXT,
+    pppoe_password TEXT,
+    pppoe_ip TEXT,
+    pppoe_netmask TEXT,
+    pppoe_gateway TEXT,
+    pppoe_dns TEXT,
+    last_renewed TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Network zones
-CREATE TABLE network_zones (
+CREATE TABLE IF NOT EXISTS network_zones (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     description TEXT,
@@ -122,7 +133,7 @@ CREATE TABLE network_zones (
 );
 
 -- VLAN configurations
-CREATE TABLE vlan_configs (
+CREATE TABLE IF NOT EXISTS vlan_configs (
     id INTEGER PRIMARY KEY,
     vlan_id INTEGER UNIQUE NOT NULL,
     name TEXT NOT NULL,
@@ -140,7 +151,7 @@ CREATE TABLE vlan_configs (
 -- ============================================================================
 
 -- Firewall policies
-CREATE TABLE firewall_policies (
+CREATE TABLE IF NOT EXISTS firewall_policies (
     id INTEGER PRIMARY KEY,
     policy_id INTEGER UNIQUE NOT NULL,
     name TEXT NOT NULL,
@@ -163,7 +174,7 @@ CREATE TABLE firewall_policies (
 );
 
 -- Address objects
-CREATE TABLE address_objects (
+CREATE TABLE IF NOT EXISTS address_objects (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     type TEXT NOT NULL, -- 'subnet', 'host', 'range', 'fqdn', 'wildcard'
@@ -176,7 +187,7 @@ CREATE TABLE address_objects (
 );
 
 -- Address groups
-CREATE TABLE address_groups (
+CREATE TABLE IF NOT EXISTS address_groups (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     description TEXT,
@@ -185,7 +196,7 @@ CREATE TABLE address_groups (
 );
 
 -- Address group members
-CREATE TABLE address_group_members (
+CREATE TABLE IF NOT EXISTS address_group_members (
     id INTEGER PRIMARY KEY,
     group_id INTEGER NOT NULL,
     address_id INTEGER NOT NULL,
@@ -195,7 +206,7 @@ CREATE TABLE address_group_members (
 );
 
 -- Service objects
-CREATE TABLE service_objects (
+CREATE TABLE IF NOT EXISTS service_objects (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     protocol TEXT NOT NULL, -- 'tcp', 'udp', 'icmp', 'icmp6'
@@ -209,7 +220,7 @@ CREATE TABLE service_objects (
 );
 
 -- Service groups
-CREATE TABLE service_groups (
+CREATE TABLE IF NOT EXISTS service_groups (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     description TEXT,
@@ -218,7 +229,7 @@ CREATE TABLE service_groups (
 );
 
 -- Service group members
-CREATE TABLE service_group_members (
+CREATE TABLE IF NOT EXISTS service_group_members (
     id INTEGER PRIMARY KEY,
     group_id INTEGER NOT NULL,
     service_id INTEGER NOT NULL,
@@ -232,7 +243,7 @@ CREATE TABLE service_group_members (
 -- ============================================================================
 
 -- VPN tunnels
-CREATE TABLE vpn_tunnels (
+CREATE TABLE IF NOT EXISTS vpn_tunnels (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     type TEXT NOT NULL, -- 'ipsec', 'ssl', 'l2tp', 'pptp'
@@ -254,7 +265,7 @@ CREATE TABLE vpn_tunnels (
 );
 
 -- VPN certificates
-CREATE TABLE vpn_certificates (
+CREATE TABLE IF NOT EXISTS vpn_certificates (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     type TEXT NOT NULL, -- 'ca', 'local', 'remote'
@@ -271,7 +282,7 @@ CREATE TABLE vpn_certificates (
 -- ============================================================================
 
 -- Antivirus profiles
-CREATE TABLE antivirus_profiles (
+CREATE TABLE IF NOT EXISTS antivirus_profiles (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     status TEXT NOT NULL DEFAULT 'enabled',
@@ -283,7 +294,7 @@ CREATE TABLE antivirus_profiles (
 );
 
 -- Web filter profiles
-CREATE TABLE webfilter_profiles (
+CREATE TABLE IF NOT EXISTS webfilter_profiles (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     status TEXT NOT NULL DEFAULT 'enabled',
@@ -295,7 +306,7 @@ CREATE TABLE webfilter_profiles (
 );
 
 -- Application control profiles
-CREATE TABLE app_control_profiles (
+CREATE TABLE IF NOT EXISTS app_control_profiles (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     status TEXT NOT NULL DEFAULT 'enabled',
@@ -305,7 +316,7 @@ CREATE TABLE app_control_profiles (
 );
 
 -- IPS profiles
-CREATE TABLE ips_profiles (
+CREATE TABLE IF NOT EXISTS ips_profiles (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     status TEXT NOT NULL DEFAULT 'enabled',
@@ -315,7 +326,7 @@ CREATE TABLE ips_profiles (
 );
 
 -- DLP profiles
-CREATE TABLE dlp_profiles (
+CREATE TABLE IF NOT EXISTS dlp_profiles (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     status TEXT NOT NULL DEFAULT 'enabled',
@@ -329,7 +340,7 @@ CREATE TABLE dlp_profiles (
 -- ============================================================================
 
 -- System logs
-CREATE TABLE system_logs (
+CREATE TABLE IF NOT EXISTS system_logs (
     id INTEGER PRIMARY KEY,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     level TEXT NOT NULL, -- 'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'
@@ -341,7 +352,7 @@ CREATE TABLE system_logs (
 );
 
 -- Traffic logs
-CREATE TABLE traffic_logs (
+CREATE TABLE IF NOT EXISTS traffic_logs (
     id INTEGER PRIMARY KEY,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     src_ip TEXT NOT NULL,
@@ -363,7 +374,7 @@ CREATE TABLE traffic_logs (
 );
 
 -- Threat logs
-CREATE TABLE threat_logs (
+CREATE TABLE IF NOT EXISTS threat_logs (
     id INTEGER PRIMARY KEY,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     threat_type TEXT NOT NULL, -- 'virus', 'intrusion', 'spam', 'phishing', 'malware'
@@ -383,7 +394,7 @@ CREATE TABLE threat_logs (
 -- ============================================================================
 
 -- Schedules
-CREATE TABLE schedules (
+CREATE TABLE IF NOT EXISTS schedules (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     type TEXT NOT NULL, -- 'recurring', 'one-time'
@@ -399,7 +410,7 @@ CREATE TABLE schedules (
 );
 
 -- Backup configurations
-CREATE TABLE backup_configs (
+CREATE TABLE IF NOT EXISTS backup_configs (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     type TEXT NOT NULL, -- 'full', 'config', 'log'
@@ -421,7 +432,7 @@ CREATE TABLE backup_configs (
 -- ============================================================================
 
 -- Cloud connections
-CREATE TABLE cloud_connections (
+CREATE TABLE IF NOT EXISTS cloud_connections (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     cloud_type TEXT NOT NULL, -- 'enterprise_cloud', 'aws', 'azure', 'gcp'
@@ -437,7 +448,7 @@ CREATE TABLE cloud_connections (
 );
 
 -- Entry connections (formerly Security Fabric)
-CREATE TABLE entry_connections (
+CREATE TABLE IF NOT EXISTS entry_connections (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     device_type TEXT NOT NULL, -- 'gateway', 'switch', 'access_point', 'analyzer'
@@ -455,7 +466,7 @@ CREATE TABLE entry_connections (
 -- ============================================================================
 
 -- Virtual machines
-CREATE TABLE virtual_machines (
+CREATE TABLE IF NOT EXISTS virtual_machines (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     vm_type TEXT NOT NULL, -- 'gateway-vm', 'manager-vm', 'analyzer-vm'
@@ -475,76 +486,91 @@ CREATE TABLE virtual_machines (
 -- ============================================================================
 
 -- System metrics indexes
-CREATE INDEX idx_system_metrics_timestamp ON system_metrics(timestamp);
-CREATE INDEX idx_system_metrics_cpu ON system_metrics(cpu_usage);
-CREATE INDEX idx_system_metrics_memory ON system_metrics(memory_usage);
+CREATE INDEX IF NOT EXISTS idx_system_metrics_timestamp ON system_metrics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_system_metrics_cpu ON system_metrics(cpu_usage);
+CREATE INDEX IF NOT EXISTS idx_system_metrics_memory ON system_metrics(memory_usage);
 
 -- Log indexes
-CREATE INDEX idx_system_logs_timestamp ON system_logs(timestamp);
-CREATE INDEX idx_system_logs_level ON system_logs(level);
-CREATE INDEX idx_traffic_logs_timestamp ON traffic_logs(timestamp);
-CREATE INDEX idx_traffic_logs_src_ip ON traffic_logs(src_ip);
-CREATE INDEX idx_traffic_logs_dst_ip ON traffic_logs(dst_ip);
-CREATE INDEX idx_threat_logs_timestamp ON threat_logs(timestamp);
-CREATE INDEX idx_threat_logs_severity ON threat_logs(severity);
+CREATE INDEX IF NOT EXISTS idx_system_logs_timestamp ON system_logs(timestamp);
+CREATE INDEX IF NOT EXISTS idx_system_logs_level ON system_logs(level);
+CREATE INDEX IF NOT EXISTS idx_traffic_logs_timestamp ON traffic_logs(timestamp);
+CREATE INDEX IF NOT EXISTS idx_traffic_logs_src_ip ON traffic_logs(src_ip);
+CREATE INDEX IF NOT EXISTS idx_traffic_logs_dst_ip ON traffic_logs(dst_ip);
+CREATE INDEX IF NOT EXISTS idx_threat_logs_timestamp ON threat_logs(timestamp);
+CREATE INDEX IF NOT EXISTS idx_threat_logs_severity ON threat_logs(severity);
 
 -- Policy and security indexes
-CREATE INDEX idx_firewall_policies_src_zone ON firewall_policies(src_zone_id);
-CREATE INDEX idx_firewall_policies_dst_zone ON firewall_policies(dst_zone_id);
-CREATE INDEX idx_firewall_policies_action ON firewall_policies(action);
-CREATE INDEX idx_address_objects_type ON address_objects(type);
-CREATE INDEX idx_service_objects_protocol ON service_objects(protocol);
+CREATE INDEX IF NOT EXISTS idx_firewall_policies_src_zone ON firewall_policies(src_zone_id);
+CREATE INDEX IF NOT EXISTS idx_firewall_policies_dst_zone ON firewall_policies(dst_zone_id);
+CREATE INDEX IF NOT EXISTS idx_firewall_policies_action ON firewall_policies(action);
+CREATE INDEX IF NOT EXISTS idx_address_objects_type ON address_objects(type);
+CREATE INDEX IF NOT EXISTS idx_service_objects_protocol ON service_objects(protocol);
 
 -- VPN indexes
-CREATE INDEX idx_vpn_tunnels_status ON vpn_tunnels(status);
-CREATE INDEX idx_vpn_tunnels_type ON vpn_tunnels(type);
+CREATE INDEX IF NOT EXISTS idx_vpn_tunnels_status ON vpn_tunnels(status);
+CREATE INDEX IF NOT EXISTS idx_vpn_tunnels_type ON vpn_tunnels(type);
 
 -- ============================================================================
 -- INITIAL DATA
 -- ============================================================================
 
 -- Insert default system configuration
-INSERT INTO system_config (hostname, serial_number, firmware_version, system_time, timezone, admin_email, contact_info, location, description) 
-VALUES ('Open-NGFW', 'NGW1234567890123', 'v7.4.0', CURRENT_TIMESTAMP, 'UTC', 'admin@open-ngfw.local', 'Network Administrator', 'Data Center', 'Open Next-Generation Firewall');
+INSERT OR IGNORE INTO system_config (id, hostname, serial_number, firmware_version, system_time, timezone, admin_email, contact_info, location, description) 
+VALUES (1, 'Open-NGFW', 'NGW1234567890123', 'v7.4.0', CURRENT_TIMESTAMP, 'UTC', 'admin@open-ngfw.local', 'Network Administrator', 'Data Center', 'Open Next-Generation Firewall');
 
 -- Insert default administrator
-INSERT INTO administrators (username, password_hash, full_name, email, role, status) 
-VALUES ('admin', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RK.s5uOeG', 'System Administrator', 'admin@open-ngfw.local', 'super_admin', 'active');
+INSERT OR IGNORE INTO administrators (id, username, password_hash, full_name, email, role, status) 
+VALUES (1, 'admin', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RK.s5uOeG', 'System Administrator', 'admin@open-ngfw.local', 'super_admin', 'active');
 
 -- Insert default zones
-INSERT INTO network_zones (name, description) VALUES 
-('WAN', 'External/Internet zone'),
-('LAN', 'Internal/Local network zone'),
-('DMZ', 'Demilitarized zone'),
-('MGMT', 'Management network zone');
+INSERT OR IGNORE INTO network_zones (id, name, description) VALUES 
+(1, 'WAN', 'External/Internet zone'),
+(2, 'LAN', 'Internal/Local network zone'),
+(3, 'DMZ', 'Demilitarized zone'),
+(4, 'MGMT', 'Management network zone');
 
 -- Insert default interfaces
-INSERT INTO network_interfaces (name, alias, type, status, ip_address, netmask, zone_id, description) VALUES 
-('port1', 'WAN1', 'physical', 'up', '192.168.1.1', '255.255.255.0', 1, 'WAN Interface 1'),
-('port2', 'LAN1', 'physical', 'up', '10.0.1.1', '255.255.255.0', 2, 'LAN Interface 1'),
-('port3', 'DMZ1', 'physical', 'up', '172.16.1.1', '255.255.255.0', 3, 'DMZ Interface 1'),
-('port4', 'MGMT1', 'physical', 'up', '10.0.0.1', '255.255.255.0', 4, 'Management Interface');
+INSERT OR IGNORE INTO network_interfaces (id, name, alias, interface_type, status, addressing_mode) VALUES 
+(1, 'port1', 'WAN1', 'physical', 'Connected', 'Manual'),
+(2, 'port2', 'LAN1', 'physical', 'Connected', 'Manual'),
+(3, 'port3', 'DMZ1', 'physical', 'Connected', 'Manual'),
+(4, 'port4', 'MGMT1', 'physical', 'Connected', 'Manual');
 
 -- Insert default address objects
-INSERT INTO address_objects (name, type, value, comment) VALUES 
-('any', 'wildcard', '0.0.0.0/0', 'Any IPv4 address'),
-('all', 'wildcard', '::/0', 'Any IPv6 address'),
-('localhost', 'host', '127.0.0.1', 'Localhost'),
-('dns_servers', 'subnet', '8.8.8.8/32', 'Google DNS servers');
+INSERT OR IGNORE INTO address_objects (id, name, type, value, comment) VALUES 
+(1, 'any', 'wildcard', '0.0.0.0/0', 'Any IPv4 address'),
+(2, 'all', 'wildcard', '::/0', 'Any IPv6 address'),
+(3, 'localhost', 'host', '127.0.0.1', 'Localhost'),
+(4, 'dns_servers', 'subnet', '8.8.8.8/32', 'Google DNS servers');
 
 -- Insert default service objects
-INSERT INTO service_objects (name, protocol, dst_port, comment) VALUES 
-('HTTP', 'tcp', '80', 'Hypertext Transfer Protocol'),
-('HTTPS', 'tcp', '443', 'HTTP Secure'),
-('SSH', 'tcp', '22', 'Secure Shell'),
-('DNS', 'udp', '53', 'Domain Name System'),
-('PING', 'icmp', NULL, 'Internet Control Message Protocol');
+INSERT OR IGNORE INTO service_objects (id, name, protocol, dst_port, comment) VALUES 
+(1, 'HTTP', 'tcp', '80', 'Hypertext Transfer Protocol'),
+(2, 'HTTPS', 'tcp', '443', 'HTTP Secure'),
+(3, 'SSH', 'tcp', '22', 'Secure Shell'),
+(4, 'DNS', 'udp', '53', 'Domain Name System'),
+(5, 'PING', 'icmp', NULL, 'Internet Control Message Protocol');
 
 -- Insert default firewall policy
-INSERT INTO firewall_policies (policy_id, name, src_zone_id, dst_zone_id, src_address, dst_address, service, action, status, log_traffic) 
-VALUES (1, 'Default Deny', 1, 2, '["any"]', '["any"]', '["any"]', 'deny', 'enabled', TRUE);
+INSERT OR IGNORE INTO firewall_policies (id, policy_id, name, src_zone_id, dst_zone_id, src_address, dst_address, service, action, status, log_traffic) 
+VALUES (1, 1, 'Default Deny', 1, 2, '["any"]', '["any"]', '["any"]', 'deny', 'enabled', TRUE);
 
 -- Insert default licenses
-INSERT INTO system_licenses (license_type, license_key, status, expiry_date, features) VALUES 
-('enterprise', 'ENT123456789012345', 'active', '2025-12-31', '["antivirus", "webfilter", "ips", "dlp"]'),
-('cloud', 'CLD987654321098765', 'active', '2025-12-31', '["logging", "monitoring", "backup"]'); 
+INSERT OR IGNORE INTO system_licenses (id, license_type, license_key, status, expiry_date, features) VALUES 
+(1, 'enterprise', 'ENT123456789012345', 'active', '2025-12-31', '["antivirus", "webfilter", "ips", "dlp"]'),
+(2, 'cloud', 'CLD987654321098765', 'active', '2025-12-31', '["logging", "monitoring", "backup"]');
+
+-- Firewall Rules Table for NGFW (SQLCipher compatible)
+CREATE TABLE IF NOT EXISTS firewall_rules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    src_ip TEXT,
+    dst_ip TEXT,
+    src_port INTEGER,
+    dst_port INTEGER,
+    protocol TEXT,
+    action TEXT NOT NULL, -- ACCEPT/DROP/REJECT
+    enabled BOOLEAN NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+); 

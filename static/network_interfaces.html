@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Interfaces - Open-NGFW</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+        }
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .submenu {
+            transition: all 0.3s ease;
+        }
+        .section {
+            transition: opacity 0.3s ease;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .section:not(.hidden) {
+            display: block !important;
+        }
+    </style>
+</head>
+<body class="flex bg-gray-100 min-h-screen">
+    <div id="sidebar-container"></div>
+    <script>
+    fetch('/static/sidebar.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('sidebar-container').innerHTML = html; });
+    </script>
+    <!-- Main content -->
+    <div class="flex flex-col flex-1 min-h-screen">
+        <div class="topbar flex items-center justify-end h-12 bg-green-800 text-white px-8">
+            <div class="user flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-user-circle"></i> admin
+            </div>
+        </div>
+        <main class="main-content flex-1 p-6">
+            <h1 class="text-2xl font-bold text-green-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-network-wired"></i> Network Interfaces</h1>
+            <div class="bg-white rounded shadow p-4">
+                <table class="min-w-full border">
+                    <thead>
+                        <tr class="bg-green-100">
+                            <th class="px-3 py-2 border-b">Name</th>
+                            <th class="px-3 py-2 border-b">Alias</th>
+                            <th class="px-3 py-2 border-b">Type</th>
+                            <th class="px-3 py-2 border-b">Role</th>
+                            <th class="px-3 py-2 border-b">Addressing</th>
+                            <th class="px-3 py-2 border-b">Status</th>
+                            <th class="px-3 py-2 border-b">IP</th>
+                            <th class="px-3 py-2 border-b">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="interfaces-table-body">
+                        <tr><td colspan="8" class="text-center text-gray-400">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Edit Interface Modal (copied from dashboard.html, including PPPoE fields) -->
+            <div id="edit-interface-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+                <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+                    <button onclick="closeEditInterfaceModal()" class="absolute top-2 right-2 text-gray-400 hover:text-red-600"><i class="fa fa-times"></i></button>
+                    <h3 class="text-lg font-bold text-green-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Edit Interface</h3>
+                    <form id="edit-interface-form" class="space-y-4">
+                      <div class="grid grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Name</label>
+                          <input type="text" id="iface-name" class="w-full border rounded px-2 py-1" readonly>
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Alias</label>
+                          <input type="text" id="iface-alias" class="w-full border rounded px-2 py-1">
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Type</label>
+                          <input type="text" id="iface-type" class="w-full border rounded px-2 py-1" readonly>
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Role</label>
+                          <select id="iface-role" class="w-full border rounded px-2 py-1">
+                            <option value="WAN">WAN</option>
+                            <option value="LAN">LAN</option>
+                            <option value="DMZ">DMZ</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">VRF ID</label>
+                          <input type="number" id="iface-vrf" class="w-full border rounded px-2 py-1" min="0">
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Bandwidth Up (kbps)</label>
+                          <input type="number" id="iface-bandwidth-up" class="w-full border rounded px-2 py-1" min="0">
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Bandwidth Down (kbps)</label>
+                          <input type="number" id="iface-bandwidth-down" class="w-full border rounded px-2 py-1" min="0">
+                        </div>
+                      </div>
+                      <div class="mt-4">
+                        <label class="block text-xs font-semibold mb-1">Addressing Mode</label>
+                        <div class="flex gap-4 mb-2">
+                          <button type="button" class="addressing-tab px-3 py-1 rounded border text-sm" data-mode="Manual" onclick="switchAddressingTab('Manual')">Manual</button>
+                          <button type="button" class="addressing-tab px-3 py-1 rounded border text-sm" data-mode="DHCP" onclick="switchAddressingTab('DHCP')">DHCP</button>
+                          <button type="button" class="addressing-tab px-3 py-1 rounded border text-sm" data-mode="PPPoE" onclick="switchAddressingTab('PPPoE')">PPPoE</button>
+                        </div>
+                        <!-- Manual -->
+                        <div id="manual-fields" class="addressing-fields hidden">
+                          <div class="grid grid-cols-2 gap-4">
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">IP Address</label>
+                              <input type="text" id="manual-ip" class="w-full border rounded px-2 py-1">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">Netmask</label>
+                              <input type="text" id="manual-netmask" class="w-full border rounded px-2 py-1">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">Gateway</label>
+                              <input type="text" id="manual-gateway" class="w-full border rounded px-2 py-1">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">DNS</label>
+                              <input type="text" id="manual-dns" class="w-full border rounded px-2 py-1">
+                            </div>
+                          </div>
+                        </div>
+                        <!-- DHCP -->
+                        <div id="dhcp-fields" class="addressing-fields hidden">
+                          <div class="grid grid-cols-2 gap-4 mb-2">
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">Obtained IP/Netmask</label>
+                              <input type="text" id="dhcp-ip" class="w-full border rounded px-2 py-1" readonly>
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">Acquired DNS</label>
+                              <input type="text" id="dhcp-dns" class="w-full border rounded px-2 py-1" readonly>
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">Default Gateway</label>
+                              <input type="text" id="dhcp-gateway" class="w-full border rounded px-2 py-1" readonly>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- PPPoE -->
+                        <div id="pppoe-fields" class="addressing-fields hidden">
+                          <div class="grid grid-cols-2 gap-4">
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">PPPoE Username</label>
+                              <input type="text" id="pppoe-username" class="w-full border rounded px-2 py-1">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">PPPoE Password</label>
+                              <input type="password" id="pppoe-password" class="w-full border rounded px-2 py-1">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">PPPoE IP</label>
+                              <input type="text" id="pppoe-ip" class="w-full border rounded px-2 py-1">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">PPPoE DNS</label>
+                              <input type="text" id="pppoe-dns" class="w-full border rounded px-2 py-1">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold mb-1">PPPoE Gateway</label>
+                              <input type="text" id="pppoe-gateway" class="w-full border rounded px-2 py-1">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex justify-end gap-2 mt-6">
+                        <button type="button" class="bg-gray-200 text-gray-700 px-4 py-1 rounded hover:bg-gray-300" onclick="closeEditInterfaceModal()">Cancel</button>
+                        <button type="submit" class="bg-green-700 text-white px-6 py-1 rounded shadow hover:bg-green-800">Save</button>
+                      </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+    // Sidebar toggle logic (optional, for submenu)
+    function toggleMenu(submenuId, el) {
+        const submenu = document.getElementById(submenuId);
+        if (submenu) submenu.classList.toggle('hidden');
+        document.querySelectorAll('.sidebar .menu-item').forEach(item => item.classList.remove('bg-green-700', 'text-white'));
+        if (el) el.classList.add('bg-green-700', 'text-white');
+    }
+    // --- Network Interfaces CRUD Logic ---
+    const interfacesTableBody = document.getElementById('interfaces-table-body');
+    const editModal = document.getElementById('edit-interface-modal');
+    const editForm = document.getElementById('edit-interface-form');
+    let currentEditId = null;
+    async function loadInterfaces() {
+      interfacesTableBody.innerHTML = '<tr><td colspan="8" class="text-center text-gray-400">Loading...</td></tr>';
+      try {
+        const res = await fetch('/api/network/interfaces');
+        const data = await res.json();
+        interfacesTableBody.innerHTML = '';
+        data.forEach(iface => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="px-3 py-2 border-b">${iface.name}</td>
+            <td class="px-3 py-2 border-b">${iface.alias || ''}</td>
+            <td class="px-3 py-2 border-b">${iface.interface_type}</td>
+            <td class="px-3 py-2 border-b">${iface.role || ''}</td>
+            <td class="px-3 py-2 border-b">${iface.addressing_mode || ''}</td>
+            <td class="px-3 py-2 border-b">${iface.status || ''}</td>
+            <td class="px-3 py-2 border-b">${iface.manual_ip || iface.dhcp_ip || iface.pppoe_ip || ''}</td>
+            <td class="px-3 py-2 border-b"><button class="text-blue-600 hover:underline" onclick="openEditInterfaceModal(${iface.id})">Edit</button></td>
+          `;
+          interfacesTableBody.appendChild(tr);
+        });
+        if (data.length === 0) {
+          interfacesTableBody.innerHTML = '<tr><td colspan="8" class="text-center text-gray-400">No interfaces found.</td></tr>';
+        }
+      } catch (e) {
+        interfacesTableBody.innerHTML = '<tr><td colspan="8" class="text-center text-red-500">Failed to load interfaces.</td></tr>';
+      }
+    }
+    loadInterfaces();
+    // Modal logic (reuse from dashboard.html as needed)
+    function openEditInterfaceModal(id) {
+      // ... (reuse modal logic from dashboard.html) ...
+    }
+    function closeEditInterfaceModal() {
+      editModal.classList.add('hidden');
+      currentEditId = null;
+    }
+    function switchAddressingTab(mode) {
+      document.querySelectorAll('.addressing-fields').forEach(f => f.classList.add('hidden'));
+      if (mode === 'Manual') {
+        document.getElementById('manual-fields').classList.remove('hidden');
+      } else if (mode === 'DHCP') {
+        document.getElementById('dhcp-fields').classList.remove('hidden');
+      } else if (mode === 'PPPoE') {
+        document.getElementById('pppoe-fields').classList.remove('hidden');
+      }
+    }
+    </script>
+</body>
+</html> 

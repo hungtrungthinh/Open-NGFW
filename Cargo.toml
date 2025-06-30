@@ -3,34 +3,41 @@ name = "open-ngfw"
 version = "0.1.0"
 edition = "2021"
 description = "Open Next-Generation Firewall with web dashboard"
-authors = ["Open-NGFW Team <wtf@boringlab.io>"]
+authors = ["WTF <wtf@boringlab.io>"]
 license = "MIT"
+repository = "https://github.com/hungtrungthinh/Open-NGFW"
 keywords = ["firewall", "ngfw", "network", "security", "web", "dashboard"]
 categories = ["network-programming", "web-programming"]
+default-run = "open-ngfw"
 
 [dependencies]
-tokio = { version = "1.0", features = ["full"] }
 axum = { version = "0.7", features = ["macros"] }
-tower = "0.4"
-tower-http = { version = "0.5", features = ["cors", "fs"] }
+tokio = { version = "1.0", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+rusqlite = { version = "0.29", features = ["bundled"] }
+chrono = { version = "0.4", features = ["serde"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1.0"
 uuid = { version = "1.0", features = ["v4"] }
-chrono = { version = "0.4", features = ["serde"] }
+flate2 = "1.0"
+reqwest = { version = "0.11", features = ["json"] }
+async-trait = "0.1"
+hostname = "0.3"
+tower-http = { version = "0.5", features = ["cors", "fs"] }
+tower = "0.4"
 pnet = "0.35"
 libc = "0.2"
 nix = "0.27"
-anyhow = "1.0"
 thiserror = "1.0"
-flate2 = "1.0"
 bincode = "1.3"
 dashmap = "5.5"
 crossbeam-channel = "0.5"
 memmap2 = "0.9"
 lz4 = "1.24"
 snap = "1.1"
+get_if_addrs = "0.5.3"
 
 [profile.release]
 opt-level = 3

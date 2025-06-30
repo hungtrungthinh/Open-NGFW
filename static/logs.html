@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firewall Logs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+        }
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .submenu {
+            transition: all 0.3s ease;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .section:not(.hidden) {
+            display: block !important;
+        }
+    </style>
+</head>
+<body class="flex bg-gray-100 min-h-screen">
+    <div id="sidebar-container"></div>
+    <script>
+    fetch('/static/sidebar.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('sidebar-container').innerHTML = html; });
+    </script>
+    <!-- Main content -->
+    <div class="flex flex-col flex-1 min-h-screen">
+        <div class="topbar flex items-center justify-end h-12 bg-green-800 text-white px-8">
+            <div class="user flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-user-circle"></i> admin
+            </div>
+        </div>
+        <main class="main-content flex-1 p-6">
+            <h1 class="text-3xl font-bold mb-6 text-gray-800">Firewall Logs</h1>
+            <form id="filter-form" class="flex flex-wrap gap-4 mb-6 items-end">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Quick Range</label>
+                    <select id="quick-range" class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm">
+                        <option value="7">Last 7 days</option>
+                        <option value="14">Last 14 days</option>
+                        <option value="30">Last 30 days</option>
+                        <option value="today">Today</option>
+                        <option value="all">All time</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Type</label>
+                    <select id="log-type" class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm">
+                        <option value="">All</option>
+                        <option value="traffic">Traffic</option>
+                        <option value="threat">Threat</option>
+                        <option value="system">System</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Severity</label>
+                    <select id="severity" class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm">
+                        <option value="">All</option>
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="error">Error</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">From</label>
+                    <input type="datetime-local" id="from" class="mt-1 block w-48 rounded-md border-gray-300 shadow-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">To</label>
+                    <input type="datetime-local" id="to" class="mt-1 block w-48 rounded-md border-gray-300 shadow-sm" />
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Filter</button>
+            </form>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+                <div id="chart-container" class="bg-white rounded shadow p-4 w-full md:w-1/2">
+                    <canvas id="logChart" height="80"></canvas>
+                </div>
+                <button id="export-csv" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full md:w-auto">Export CSV</button>
+            </div>
+            <div class="overflow-x-auto bg-white rounded shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Severity</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Source IP</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Dest IP</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Message</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logs-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Log rows here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-between items-center mt-4">
+                <button id="prev-page" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Previous</button>
+                <span id="page-info" class="text-gray-700"></span>
+                <button id="next-page" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Next</button>
+            </div>
+        </main>
+    </div>
+    <script>
+        let currentPage = 1;
+        const pageSize = 20;
+        let logsCache = [];
+        let chart = null;
+
+        async function fetchLogs(page = 1, updateChart = true) {
+            const type = document.getElementById('log-type').value;
+            const severity = document.getElementById('severity').value;
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const params = new URLSearchParams();
+            if (type) params.append('log_type', type);
+            if (severity) params.append('severity', severity);
+            if (from) params.append('from', new Date(from).toISOString());
+            if (to) params.append('to', new Date(to).toISOString());
+            params.append('limit', pageSize);
+            params.append('offset', (page - 1) * pageSize);
+            const res = await fetch(`/api/logs?${params.toString()}`);
+            const logs = await res.json();
+            logsCache = logs;
+            renderLogs(logs);
+            document.getElementById('page-info').textContent = `Page ${page}`;
+            if (updateChart) updateLogChart(logs);
+        }
+
+        function renderLogs(logs) {
+            const tbody = document.getElementById('logs-table-body');
+            tbody.innerHTML = '';
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-400">No logs found.</td></tr>';
+                return;
+            }
+            for (const log of logs) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700">${log.timestamp ? new Date(log.timestamp).toLocaleString() : ''}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">${log.log_type || ''}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">${log.severity || ''}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">${log.source_ip || ''}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">${log.dest_ip || ''}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">${log.user || ''}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">${log.action || ''}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm max-w-xs truncate" title="${log.message || ''}">${log.message || ''}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function updateLogChart(logs) {
+            const typeCounts = { traffic: 0, threat: 0, system: 0 };
+            for (const log of logs) {
+                if (log.log_type && typeCounts.hasOwnProperty(log.log_type)) {
+                    typeCounts[log.log_type]++;
+                }
+            }
+            const ctx = document.getElementById('logChart').getContext('2d');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Traffic', 'Threat', 'System'],
+                    datasets: [{
+                        label: 'Log Count',
+                        data: [typeCounts.traffic, typeCounts.threat, typeCounts.system],
+                        backgroundColor: ['#2563eb', '#f59e42', '#10b981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, precision: 0 } }
+                }
+            });
+        }
+
+        document.getElementById('filter-form').addEventListener('submit', e => {
+            e.preventDefault();
+            currentPage = 1;
+            fetchLogs(currentPage);
+        });
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchLogs(currentPage);
+            }
+        });
+        document.getElementById('next-page').addEventListener('click', () => {
+            currentPage++;
+            fetchLogs(currentPage);
+        });
+
+        document.getElementById('export-csv').addEventListener('click', () => {
+            if (!logsCache.length) return;
+            const header = ['Time','Type','Severity','Source IP','Dest IP','User','Action','Message'];
+            const rows = logsCache.map(log => [
+                log.timestamp ? new Date(log.timestamp).toLocaleString() : '',
+                log.log_type || '',
+                log.severity || '',
+                log.source_ip || '',
+                log.dest_ip || '',
+                log.user || '',
+                log.action || '',
+                log.message ? '"' + log.message.replace(/"/g, '""') + '"' : ''
+            ]);
+            const csv = [header, ...rows].map(r => r.join(',')).join('\n');
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'logs.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        window.setRange = function(days) {
+            const now = new Date();
+            const pad = n => n.toString().padStart(2, '0');
+            const yyyy = now.getFullYear();
+            const mm = pad(now.getMonth() + 1);
+            const dd = pad(now.getDate());
+            const hh = pad(now.getHours());
+            const min = pad(now.getMinutes());
+            let from, to;
+            if (days === 'today') {
+                from = `${yyyy}-${mm}-${dd}T00:00`;
+                to = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+            } else if (days === 'all') {
+                from = '';
+                to = '';
+            } else {
+                const fromDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+                const yyyyF = fromDate.getFullYear();
+                const mmF = pad(fromDate.getMonth() + 1);
+                const ddF = pad(fromDate.getDate());
+                from = `${yyyyF}-${mmF}-${ddF}T00:00`;
+                to = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+            }
+            document.getElementById('from').value = from;
+            document.getElementById('to').value = to;
+            fetchLogs(1);
+        }
+        document.getElementById('quick-range').addEventListener('change', function() {
+            setRange(this.value);
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+            setRange(7);
+        });
+
+        // Initial load
+        fetchLogs(currentPage);
+        // Realtime auto-refresh mỗi 5s
+        setInterval(() => fetchLogs(currentPage, false), 5000);
+    </script>
+</body>
+</html> 

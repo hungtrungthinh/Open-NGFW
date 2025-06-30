@@ -4,6 +4,8 @@ mod models;
 mod utils;
 mod network;
 mod logging;
+mod firewall_db;
+mod network_db;
 
 use axum::{
     Router,
@@ -18,6 +20,8 @@ use crate::firewall::Firewall;
 use crate::network::NetworkManager;
 use crate::api::*;
 use crate::logging::{LogManager, LogConfig, RotationConfig, RetentionConfig, PerformanceConfig, RotationInterval, LogType, LogMetadata};
+use tower_http::services::ServeDir;
+use serde_json::json;
 
 #[tokio::main]
 async fn main() {
@@ -64,8 +68,65 @@ async fn main() {
         }
     };
 
+    // Ghi log hệ thống ra file vật lý khi app khởi động
+    let startup_metadata = LogMetadata::system_event(
+        "startup",
+        "info",
+        "core",
+        "system"
+    );
+    let startup_data = json!({
+        "event": "system_startup",
+        "message": "Open-NGFW application started successfully",
+        "component": "core",
+        "category": "system",
+        "status": "success",
+        "version": "1.0.0",
+        "uptime": 0
+    });
+    let _ = log_manager.log_system(startup_metadata, startup_data).await;
+
+    // Log firewall initialization
+    let firewall_metadata = LogMetadata::system_event(
+        "firewall_init",
+        "info",
+        "firewall",
+        "security"
+    );
+    let firewall_data = json!({
+        "event": "firewall_initialization",
+        "message": "Firewall initialized with default rules",
+        "component": "firewall",
+        "category": "security",
+        "status": "success",
+        "rules_count": 0
+    });
+    let _ = log_manager.log_system(firewall_metadata, firewall_data).await;
+
+    // Log network manager initialization
+    let network_metadata = LogMetadata::system_event(
+        "network_init",
+        "info",
+        "network",
+        "network"
+    );
+    let network_data = json!({
+        "event": "network_initialization",
+        "message": "Network manager initialized",
+        "component": "network",
+        "category": "network",
+        "status": "success"
+    });
+    let _ = log_manager.log_system(network_metadata, network_data).await;
+
     // Initialize firewall
     let firewall = Arc::new(RwLock::new(Firewall::new().await));
+    
+    // Set log manager for firewall
+    {
+        let mut firewall = firewall.write().await;
+        firewall.set_log_manager(log_manager.clone());
+    }
     
     // Initialize network manager
     let network_manager = Arc::new(RwLock::new(NetworkManager::new().await));
@@ -80,8 +141,8 @@ async fn main() {
     let app = Router::new()
         // Dashboard
         .route("/", get(serve_dashboard))
+        .route("/network/interfaces", get(serve_network_interfaces))
         .route("/api/dashboard/status", get(dashboard_status))
-        
         // Legacy Firewall API
         .route("/api/rules", get(get_rules))
         .route("/api/rules", post(add_rule))
@@ -90,51 +151,45 @@ async fn main() {
         .route("/api/status", get(get_status))
         .route("/api/statistics", get(get_statistics))
         .route("/api/toggle", post(toggle_firewall))
-        
         // System & Configuration API
         .route("/api/system/config", get(get_system_config))
         .route("/api/system/licenses", get(get_system_licenses))
         .route("/api/system/metrics", get(get_system_metrics))
-        
         // User Management API
         .route("/api/administrators", get(get_administrators))
         .route("/api/user-groups", get(get_user_groups))
-        
         // Network & Interface API
-        .route("/api/network/interfaces", get(get_network_interfaces))
+        .route("/api/network/interfaces", get(get_interfaces))
+        .route("/api/network/interfaces", post(add_interface))
+        .route("/api/network/interfaces/:id", get(get_interface_by_id))
+        .route("/api/network/interfaces/:id", put(update_interface))
+        .route("/api/network/interfaces/:id", delete(delete_interface))
         .route("/api/network/zones", get(get_network_zones))
         .route("/api/network/static-routes", get(static_routes))
-        
         // Network Hardware Detection API
-        .route("/api/network/physical-ports", get(get_all_physical_ports))
+        .route("/api/network/physical-ports", get(api::get_all_physical_ports))
         .route("/api/network/physical-ports/summary", get(get_physical_ports_summary))
         .route("/api/network/physical-ports/:port_id", get(get_port_details))
         .route("/api/network/physical-ports/:interface_name/statistics", get(get_port_statistics))
-        
         // Firewall & Security API
         .route("/api/firewall/policies", get(get_firewall_policies))
         .route("/api/firewall/address-objects", get(get_address_objects))
         .route("/api/firewall/service-objects", get(get_service_objects))
-        
         // VPN API
         .route("/api/vpn/tunnels", get(get_vpn_tunnels))
-        
         // Security Profiles API
         .route("/api/security/antivirus-profiles", get(get_antivirus_profiles))
         .route("/api/security/webfilter-profiles", get(get_webfilter_profiles))
-        
         // Monitoring & Logging API
         .route("/api/logs/system", get(get_system_logs))
         .route("/api/logs/traffic", get(get_traffic_logs))
         .route("/api/logs/threats", get(get_threat_logs))
-        
+        .route("/api/logs", get(api::get_logs))
         // Cloud & Entry API
         .route("/api/cloud/connections", get(get_cloud_connections))
         .route("/api/entry/connections", get(get_entry_connections))
-        
         // Virtualization API
         .route("/api/virtual-machines", get(get_virtual_machines))
-        
         // Legacy API endpoints (for backward compatibility)
         .route("/api/security/topology", get(security_topology))
         .route("/api/network/interfaces-legacy", get(network_interfaces))
@@ -145,15 +200,19 @@ async fn main() {
         .route("/api/logs/traffic-legacy", get(local_traffic_logs))
         .route("/api/monitor/routing", get(routing_monitors))
         .route("/api/wifi/ssids", get(wifi_ssids))
-        
+        .route("/network_interfaces.html", get(|| async { axum::response::Html(include_str!("../static/network_interfaces.html")) }))
+        .route("/logs.html", get(|| async { axum::response::Html(include_str!("../static/logs.html")) }))
+        .route("/analyzer.html", get(|| async { axum::response::Html(include_str!("../static/analyzer.html")) }))
+        .route("/reports.html", get(|| async { axum::response::Html(include_str!("../static/reports.html")) }))
+        .nest_service("/static", ServeDir::new("static"))
         .layer(cors)
-        .with_state((firewall, network_manager));
+        .with_state((firewall, network_manager, log_manager));
 
-    println!("🚀 Open-NGFW starting on http://localhost:3000");
-    println!("📊 Dashboard available at http://localhost:3000");
-    println!("🔧 API documentation available at http://localhost:3000/api");
-    println!("📝 Logs stored in ./logs/ directory");
-    println!("🔌 Physical port detection available at /api/network/physical-ports");
+    println!("-> Open-NGFW starting on http://localhost:3000");
+    println!("-> Dashboard available at http://localhost:3000");
+    println!("-> API documentation available at http://localhost:3000/api");
+    println!("-> Logs stored in ./logs/ directory");
+    println!("-> Physical port detection available at /api/network/physical-ports");
 
     // Start server
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

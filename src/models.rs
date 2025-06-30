@@ -90,24 +90,45 @@ pub struct UserGroupAssignment {
 // NETWORK & INTERFACE MODELS
 // ============================================================================
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum AddressingMode {
+    Manual,
+    DHCP,
+    PPPoE,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NetworkInterface {
     pub id: i32,
     pub name: String,
     pub alias: Option<String>,
-    pub interface_type: String,
-    pub status: String,
-    pub ip_address: Option<String>,
-    pub netmask: Option<String>,
-    pub gateway: Option<String>,
-    pub mtu: i32,
-    pub speed: Option<i32>,
-    pub duplex: Option<String>,
-    pub vlan_id: Option<i32>,
-    pub zone_id: Option<i32>,
-    pub description: Option<String>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub interface_type: String, // Physical, VLAN, etc.
+    pub vrf_id: Option<i32>,
+    pub role: Option<String>, // WAN, LAN, DMZ, etc.
+    pub bandwidth_up: Option<i32>,
+    pub bandwidth_down: Option<i32>,
+    pub addressing_mode: AddressingMode,
+    pub status: Option<String>, // Connected, Disconnected
+    // Manual
+    pub manual_ip: Option<String>,
+    pub manual_netmask: Option<String>,
+    pub manual_gateway: Option<String>,
+    pub manual_dns: Option<String>,
+    // DHCP
+    pub dhcp_ip: Option<String>,
+    pub dhcp_netmask: Option<String>,
+    pub dhcp_gateway: Option<String>,
+    pub dhcp_dns: Option<String>,
+    // PPPoE
+    pub pppoe_username: Option<String>,
+    pub pppoe_password: Option<String>,
+    pub pppoe_ip: Option<String>,
+    pub pppoe_netmask: Option<String>,
+    pub pppoe_gateway: Option<String>,
+    pub pppoe_dns: Option<String>,
+    pub last_renewed: Option<chrono::DateTime<chrono::Utc>>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -576,6 +597,19 @@ pub struct WifiSsid {
 pub struct RoutingMonitor {
     pub route: String,
     pub status: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LogEntry {
+    pub id: i32,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
+    pub log_type: String,
+    pub message: String,
+    pub severity: Option<String>,
+    pub source_ip: Option<String>,
+    pub dest_ip: Option<String>,
+    pub user: Option<String>,
+    pub action: Option<String>,
 }
 
 impl FirewallRule {

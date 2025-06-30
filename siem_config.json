@@ -1,0 +1,75 @@
+{
+  "elasticsearch": {
+    "enabled": true,
+    "url": "http://localhost:9200",
+    "index": "open-ngfw-logs",
+    "username": null,
+    "password": null,
+    "ssl_verify": true,
+    "timeout": 30
+  },
+  "splunk": {
+    "enabled": false,
+    "url": "http://localhost:8088",
+    "token": "your-splunk-token",
+    "source": "open-ngfw",
+    "sourcetype": "json",
+    "ssl_verify": true,
+    "timeout": 30
+  },
+  "syslog": {
+    "enabled": false,
+    "host": "localhost",
+    "port": 514,
+    "facility": 16,
+    "severity": 6,
+    "protocol": "udp"
+  },
+  "webhook": {
+    "enabled": false,
+    "url": "http://localhost:8080/webhook",
+    "headers": {
+      "Content-Type": "application/json",
+      "User-Agent": "Open-NGFW/1.0.0",
+      "X-API-Key": "your-api-key"
+    },
+    "timeout": 30,
+    "retry_count": 3
+  },
+  "logstash": {
+    "enabled": false,
+    "host": "localhost",
+    "port": 5000,
+    "protocol": "tcp",
+    "ssl": false,
+    "ssl_cert": null,
+    "ssl_key": null
+  },
+  "kafka": {
+    "enabled": false,
+    "brokers": ["localhost:9092"],
+    "topic": "open-ngfw-logs",
+    "acks": 1,
+    "compression": "gzip",
+    "batch_size": 1000,
+    "linger_ms": 100
+  },
+  "redis": {
+    "enabled": false,
+    "host": "localhost",
+    "port": 6379,
+    "password": null,
+    "database": 0,
+    "key_prefix": "open-ngfw:logs:",
+    "expire_seconds": 86400
+  },
+  "general": {
+    "batch_size": 100,
+    "flush_interval_seconds": 5,
+    "max_retries": 3,
+    "retry_delay_seconds": 1,
+    "enable_compression": true,
+    "enable_encryption": false,
+    "encryption_key": null
+  }
+} 

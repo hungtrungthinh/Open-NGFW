@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use tokio::sync::RwLock;
 use std::fs;
 use std::path::Path;
+use get_if_addrs::get_if_addrs;
 
 /// WAN connection types supported by the firewall
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -244,13 +245,14 @@ impl NetworkManager {
     /// Scan PCI devices for network controllers
     async fn scan_pci_devices(&self, hardware: &mut NetworkHardware) -> anyhow::Result<()> {
         // Use lspci to get PCI device information
-        let output = Command::new("lspci")
-            .args(["-nn", "-v"])
-            .output()
-            .map_err(|e| anyhow::anyhow!("Failed to run lspci: {}", e))?;
-
+        let output = match Command::new("lspci").args(["-nn", "-v"]).output() {
+            Ok(out) => out,
+            Err(e) => {
+                eprintln!("[WARN] lspci not found or failed to run: {}. Skipping PCI scan.", e);
+                return Ok(()); // Do not fail, just skip PCI scan
+            }
+        };
         let output_str = String::from_utf8_lossy(&output.stdout);
-        
         for line in output_str.lines() {
             if line.contains("Network controller") || line.contains("Ethernet controller") {
                 if let Some(device) = self.parse_pci_line(line) {
@@ -258,7 +260,6 @@ impl NetworkManager {
                 }
             }
         }
-
         Ok(())
     }
 
@@ -614,4 +615,24 @@ impl NetworkManager {
 
         Ok(serde_json::Value::Object(stats))
     }
+}
+
+// Top-level function to get real physical ports
+pub fn get_physical_ports() -> Vec<String> {
+    let mut ports = Vec::new();
+    if let Ok(ifaces) = get_if_addrs() {
+        for iface in ifaces {
+            // Filter out loopback and virtual interfaces
+            if !iface.is_loopback() &&
+               !iface.name.starts_with("veth") &&
+               !iface.name.starts_with("docker") &&
+               !iface.name.starts_with("br-") &&
+               !iface.name.starts_with("lo") {
+                if !ports.contains(&iface.name) {
+                    ports.push(iface.name);
+                }
+            }
+        }
+    }
+    ports
 } 

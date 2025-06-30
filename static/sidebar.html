@@ -1,0 +1,140 @@
+<aside class="sidebar flex flex-col p-4 bg-green-800 text-white min-w-[220px] max-w-[240px] h-screen border-r border-green-900">
+    <div class="logo flex items-center gap-2 text-xl font-bold mb-6">
+        <i class="fa-solid fa-shield-halved text-yellow-400"></i> Open-NGFW
+    </div>
+    <nav class="flex-1">
+        <ul id="sidebarMenu" class="space-y-1">
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('dashboard-sub', this)">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="dashboard-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('status', this)"><i class="fa-solid fa-circle-info"></i> Status</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('security', this)"><i class="fa-solid fa-shield"></i> Security</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('network', this)"><i class="fa-solid fa-ethernet"></i> Network</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('users_devices', this)"><i class="fa-solid fa-users"></i> Users & Devices</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('system', this)"><i class="fa-solid fa-gear"></i> System</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ot_dashboard', this)"><i class="fa-solid fa-industry"></i> OT Dashboard</li>
+                </ul>
+            </li>
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('entry-sub', this)">
+                    <i class="fa-solid fa-shield-halved"></i> Security Entry <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="entry-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_topology', this)"><i class="fa-solid fa-diagram-project"></i> Topology</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_physical', this)"><i class="fa-solid fa-server"></i> Physical Topology</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_logical', this)"><i class="fa-solid fa-sitemap"></i> Logical Topology</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_automation', this)"><i class="fa-solid fa-robot"></i> Automation</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_connectors', this)"><i class="fa-solid fa-plug"></i> Entry Connectors</li>
+                </ul>
+            </li>
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('network-sub', this)">
+                    <i class="fa-solid fa-ethernet"></i> Network <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="network-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm">
+                      <a href="/network_interfaces.html" class="flex items-center gap-2 w-full h-full"><i class="fa-solid fa-network-wired"></i> Interfaces</a>
+                    </li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('static_routes', this)"><i class="fa-solid fa-route"></i> Static Routes</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('policy_routes', this)"><i class="fa-solid fa-random"></i> Policy Routes</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('routing_objects', this)"><i class="fa-solid fa-cube"></i> Routing Objects</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('sdwan', this)"><i class="fa-solid fa-network-wired"></i> SD-WAN</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('dns', this)"><i class="fa-solid fa-globe"></i> DNS</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('extender', this)"><i class="fa-solid fa-signal"></i> Extender</li>
+                </ul>
+            </li>
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('policy-sub', this)">
+                    <i class="fa-solid fa-shield"></i> Policy & Objects <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="policy-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('firewall_policy', this)"><i class="fa-solid fa-shield-halved"></i> Firewall Policy</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('virtual_ips', this)"><i class="fa-solid fa-network-wired"></i> Virtual IPs</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('traffic_shaping', this)"><i class="fa-solid fa-sliders-h"></i> Traffic Shaping</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('addresses', this)"><i class="fa-solid fa-address-book"></i> Addresses</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('services', this)"><i class="fa-solid fa-concierge-bell"></i> Services</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('schedules', this)"><i class="fa-solid fa-calendar-alt"></i> Schedules</li>
+                </ul>
+            </li>
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('profiles-sub', this)">
+                    <i class="fa-solid fa-shield-virus"></i> Security Profiles <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="profiles-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('antivirus', this)"><i class="fa-solid fa-bug"></i> Antivirus</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('web_filter', this)"><i class="fa-solid fa-filter"></i> Web Filter</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('dns_filter', this)"><i class="fa-solid fa-globe"></i> DNS Filter</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ips', this)"><i class="fa-solid fa-shield-alt"></i> Intrusion Prevention (IPS)</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('app_control', this)"><i class="fa-solid fa-th-large"></i> Application Control</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('dlp', this)"><i class="fa-solid fa-lock"></i> Data Loss Prevention (DLP)</li>
+                </ul>
+            </li>
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('vpn-sub', this)">
+                    <i class="fa-solid fa-lock"></i> VPN <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="vpn-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ipsec_tunnels', this)"><i class="fa-solid fa-link"></i> IPsec Tunnels</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ssl_vpn_settings', this)"><i class="fa-solid fa-cog"></i> SSL-VPN Settings</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ssl_vpn_portals', this)"><i class="fa-solid fa-door-open"></i> SSL-VPN Portals</li>
+                </ul>
+            </li>
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('system-sub', this)">
+                    <i class="fa-solid fa-gear"></i> System <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="system-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('administrators', this)"><i class="fa-solid fa-user-shield"></i> Administrators</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('guard', this)"><i class="fa-solid fa-shield"></i> Guard</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('certificates', this)"><i class="fa-solid fa-certificate"></i> Certificates</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('settings', this)"><i class="fa-solid fa-sliders-h"></i> Settings</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ha', this)"><i class="fa-solid fa-layer-group"></i> High Availability (HA)</li>
+                </ul>
+            </li>
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('log-sub', this)">
+                    <i class="fa-solid fa-file-lines"></i> Log & Report <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="log-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 text-yellow-400 cursor-pointer text-sm">
+                        <a href="/logs.html" class="flex items-center gap-2 w-full h-full">
+                            <i class="fa-solid fa-traffic-light"></i> Local Traffic Log
+                        </a>
+                    </li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm">
+                        <a href="/analyzer.html" class="flex items-center gap-2 w-full h-full">
+                            <i class="fa-solid fa-chart-bar"></i> Analyzer
+                        </a>
+                    </li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm">
+                        <a href="/reports.html" class="flex items-center gap-2 w-full h-full">
+                            <i class="fa-solid fa-file-alt"></i> Reports
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('monitor-sub', this)">
+                    <i class="fa-solid fa-desktop"></i> Monitor <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="monitor-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('routing_monitor', this)"><i class="fa-solid fa-route"></i> Routing Monitor</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('vpn_monitor', this)"><i class="fa-solid fa-lock"></i> VPN Monitor</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('sdwan_monitor', this)"><i class="fa-solid fa-network-wired"></i> SD-WAN Monitor</li>
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('wifi_monitor', this)"><i class="fa-solid fa-wifi"></i> Wi-Fi Monitor</li>
+                </ul>
+            </li>
+            <li>
+                <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('wifi-switch-sub', this)">
+                    <i class="fa-solid fa-wifi"></i> Wi-Fi & Switch Controller <span class="ml-auto text-xs">+</span>
+                </div>
+                <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="wifi-switch-sub">
+                    <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('wifi_ssids', this)"><i class="fa-solid fa-wifi"></i> Wi-Fi SSIDs</li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div class="mt-auto text-xs text-gray-300 text-center pt-4">Open-NGFW v1.1.2</div>
+</aside> 

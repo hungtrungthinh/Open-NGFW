@@ -1,1 +1,0 @@
-fn(axum::extract::State<Arc<std::sync::Mutex<Firewall>>>) -> impl std::future::Future<Output = Json<Vec<FirewallRule>>> {get_rules}

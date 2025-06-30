@@ -1,1 +1,0 @@
-fn(axum::extract::State<Arc<tokio::sync::RwLock<Firewall>>>) -> impl std::future::Future<Output = (axum::http::StatusCode, Json<serde_json::Value>)> {toggle_firewall}

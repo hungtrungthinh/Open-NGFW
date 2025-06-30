@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, State, Query},
     http::StatusCode,
     response::{Html, Json},
 };
@@ -8,65 +8,257 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 use crate::firewall::Firewall;
 use crate::network::NetworkManager;
-use crate::models::{FirewallRule, CreateRuleRequest, FirewallStatus, FirewallStatistics, DashboardStatus, SecurityTopology, NetworkInterface, StaticRoute, FirewallPolicy, AntivirusProfile, Administrator, TrafficLog, RoutingMonitor, WifiSsid};
+use crate::logging::{LogManager, Filter, LogType, LogMetadata};
+use crate::models::{FirewallRule, CreateRuleRequest, FirewallStatus, FirewallStatistics, DashboardStatus, SecurityTopology, NetworkInterface, StaticRoute, FirewallPolicy, AntivirusProfile, Administrator, TrafficLog, RoutingMonitor, WifiSsid, RuleAction, Protocol, Direction, LogEntry};
+use crate::firewall_db::{open_default_db};
+use chrono::{DateTime, Utc};
+use crate::network_db::{open_default_network_db};
+use crate::models::{AddressingMode};
+use crate::network::get_physical_ports;
+use serde::Deserialize;
 
-/// Get all firewall rules
+// Type alias for the application state
+pub type AppState = (Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>, Arc<LogManager>);
+
+/// Get all firewall rules from SQLCipher database
 #[axum::debug_handler]
 pub async fn get_rules(
-    State((firewall, _network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
-) -> Json<Vec<FirewallRule>> {
-    let firewall = firewall.read().await;
-    let rules = firewall.get_rules().await;
-    Json(rules)
+    State((_firewall, _network_manager, _log_manager)): State<AppState>,
+) -> Result<Json<Vec<FirewallRule>>, (StatusCode, Json<serde_json::Value>)> {
+    match open_default_db() {
+        Ok(db) => {
+            match db.get_rules() {
+                Ok(rules) => {
+                    // Convert FirewallDB::FirewallRule to models::FirewallRule
+                    let converted_rules: Vec<FirewallRule> = rules.into_iter().map(|db_rule| {
+                        FirewallRule {
+                            id: db_rule.id.to_string(),
+                            name: db_rule.name,
+                            action: match db_rule.action.as_str() {
+                                "ACCEPT" | "Allow" => RuleAction::Allow,
+                                "DENY" | "Deny" => RuleAction::Deny,
+                                "DROP" | "Drop" => RuleAction::Drop,
+                                _ => RuleAction::Drop,
+                            },
+                            protocol: match db_rule.protocol.as_deref() {
+                                Some("TCP") => Protocol::TCP,
+                                Some("UDP") => Protocol::UDP,
+                                Some("ICMP") => Protocol::ICMP,
+                                _ => Protocol::Any,
+                            },
+                            source_ip: db_rule.src_ip,
+                            destination_ip: db_rule.dst_ip,
+                            source_port: db_rule.src_port.map(|p| p as u16),
+                            destination_port: db_rule.dst_port.map(|p| p as u16),
+                            direction: Direction::Both, // Default to Both
+                            enabled: db_rule.enabled,
+                            created_at: DateTime::parse_from_rfc3339(&db_rule.created_at)
+                                .unwrap_or_else(|_| Utc::now().into())
+                                .with_timezone(&Utc),
+                            updated_at: DateTime::parse_from_rfc3339(&db_rule.updated_at)
+                                .unwrap_or_else(|_| Utc::now().into())
+                                .with_timezone(&Utc),
+                        }
+                    }).collect();
+                    Ok(Json(converted_rules))
+                },
+                Err(e) => {
+                    eprintln!("Database error: {}", e);
+                    Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Database error" }))))
+                }
+            }
+        },
+        Err(e) => {
+            eprintln!("Failed to open database: {}", e);
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Failed to open database" }))))
+        }
+    }
 }
 
 /// Add a new firewall rule
 #[axum::debug_handler]
 pub async fn add_rule(
-    State((firewall, _network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
-    Json(rule_request): Json<CreateRuleRequest>,
-) -> (StatusCode, Json<FirewallRule>) {
-    let rule = FirewallRule::new(rule_request);
-    let rule_clone = rule.clone();
-    let mut firewall = firewall.write().await;
-    firewall.add_rule(rule).await;
-    (StatusCode::OK, Json(rule_clone))
-}
+    State((firewall, network_manager, log_manager)): State<AppState>,
+    Json(rule_data): Json<CreateRuleRequest>,
+) -> Result<(StatusCode, Json<FirewallRule>), (StatusCode, Json<serde_json::Value>)> {
+    let db = open_default_db().map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": format!("Database error: {}", e) })))
+    })?;
 
-/// Delete a firewall rule by ID
-#[axum::debug_handler]
-pub async fn delete_rule(
-    State((firewall, _network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
-    Path(rule_id): Path<String>,
-) -> (StatusCode, Json<serde_json::Value>) {
-    let mut firewall = firewall.write().await;
-    let success = firewall.remove_rule(&rule_id).await;
-    if success {
-        (StatusCode::OK, Json(json!({ "message": "Rule deleted successfully" })))
-    } else {
-        (StatusCode::NOT_FOUND, Json(json!({ "error": "Rule not found" })))
+    // Convert CreateRuleRequest to FirewallDB::FirewallRule
+    let db_rule = crate::firewall_db::FirewallRule {
+        id: 0, // Will be set by database
+        name: rule_data.name.clone(),
+        src_ip: rule_data.source_ip.clone(),
+        dst_ip: rule_data.destination_ip.clone(),
+        src_port: rule_data.source_port.map(|p| p as i64),
+        dst_port: rule_data.destination_port.map(|p| p as i64),
+        protocol: Some(match rule_data.protocol {
+            Protocol::TCP => "TCP".to_string(),
+            Protocol::UDP => "UDP".to_string(),
+            Protocol::ICMP => "ICMP".to_string(),
+            Protocol::Any => "ANY".to_string(),
+        }),
+        action: match rule_data.action {
+            RuleAction::Allow => "ACCEPT".to_string(),
+            RuleAction::Deny => "DENY".to_string(),
+            RuleAction::Drop => "DROP".to_string(),
+        },
+        enabled: true, // Default to enabled
+        created_at: String::new(), // Will be set by database
+        updated_at: String::new(), // Will be set by database
+    };
+
+    // Create rule in database
+    let rule_id = db.add_rule(&db_rule).map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": format!("Failed to add rule: {}", e) })))
+    })?;
+
+    // Get the created rule
+    match db.get_rules() {
+        Ok(rules) => {
+            if let Some(created_rule) = rules.into_iter().find(|r| r.id == rule_id) {
+                let converted_rule = FirewallRule {
+                    id: created_rule.id.to_string(),
+                    name: created_rule.name.clone(),
+                    action: match created_rule.action.as_str() {
+                        "ACCEPT" | "Allow" => RuleAction::Allow,
+                        "DENY" | "Deny" => RuleAction::Deny,
+                        "DROP" | "Drop" => RuleAction::Drop,
+                        _ => RuleAction::Drop,
+                    },
+                    protocol: match created_rule.protocol.as_deref() {
+                        Some("TCP") => Protocol::TCP,
+                        Some("UDP") => Protocol::UDP,
+                        Some("ICMP") => Protocol::ICMP,
+                        _ => Protocol::Any,
+                    },
+                    source_ip: created_rule.src_ip.clone(),
+                    destination_ip: created_rule.dst_ip.clone(),
+                    source_port: created_rule.src_port.map(|p| p as u16),
+                    destination_port: created_rule.dst_port.map(|p| p as u16),
+                    direction: Direction::Both, // Default to Both
+                    enabled: created_rule.enabled,
+                    created_at: DateTime::parse_from_rfc3339(&created_rule.created_at)
+                        .unwrap_or_else(|_| Utc::now().into())
+                        .with_timezone(&Utc),
+                    updated_at: DateTime::parse_from_rfc3339(&created_rule.updated_at)
+                        .unwrap_or_else(|_| Utc::now().into())
+                        .with_timezone(&Utc),
+                };
+
+                // Log rule creation
+                let metadata = LogMetadata::rule_event(
+                    "admin",
+                    "create",
+                    &rule_id.to_string(),
+                    &rule_data.name,
+                    &format!("{:?}", rule_data.action),
+                    "127.0.0.1"
+                );
+                let log_data = json!({
+                    "event": "rule_created",
+                    "rule_id": rule_id,
+                    "rule_name": rule_data.name,
+                    "rule_action": rule_data.action,
+                    "source_ip": rule_data.source_ip,
+                    "destination_ip": rule_data.destination_ip,
+                    "protocol": rule_data.protocol,
+                    "source_port": rule_data.source_port,
+                    "destination_port": rule_data.destination_port
+                });
+                let _ = log_manager.log_system(metadata, log_data).await;
+
+                Ok((StatusCode::CREATED, Json(converted_rule)))
+            } else {
+                Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Failed to retrieve created rule" }))))
+            }
+        },
+        Err(e) => {
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": format!("Database error: {}", e) }))))
+        }
     }
 }
 
-/// Toggle a firewall rule's enabled state
+/// Delete a firewall rule from SQLCipher database
+#[axum::debug_handler]
+pub async fn delete_rule(
+    State((_firewall, _network_manager, _log_manager)): State<AppState>,
+    Path(rule_id): Path<String>,
+) -> Result<(StatusCode, Json<serde_json::Value>), (StatusCode, Json<serde_json::Value>)> {
+    match open_default_db() {
+        Ok(db) => {
+            match rule_id.parse::<i64>() {
+                Ok(id) => {
+                    match db.delete_rule(id) {
+                        Ok(_) => {
+                            Ok((StatusCode::OK, Json(json!({ "message": "Rule deleted successfully" }))))
+                        },
+                        Err(e) => {
+                            eprintln!("Failed to delete rule: {}", e);
+                            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Failed to delete rule" }))))
+                        }
+                    }
+                },
+                Err(_) => Err((StatusCode::BAD_REQUEST, Json(json!({ "error": "Invalid rule ID" }))))
+            }
+        },
+        Err(e) => {
+            eprintln!("Failed to open database: {}", e);
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Failed to open database" }))))
+        }
+    }
+}
+
+/// Toggle a firewall rule's enabled state in SQLCipher database
 #[axum::debug_handler]
 pub async fn toggle_rule(
-    State((firewall, _network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
+    State((_firewall, _network_manager, _log_manager)): State<AppState>,
     Path(rule_id): Path<String>,
-) -> (StatusCode, Json<serde_json::Value>) {
-    let mut firewall = firewall.write().await;
-    let success = firewall.toggle_rule(&rule_id).await;
-    if success {
-        (StatusCode::OK, Json(json!({ "message": "Rule toggled successfully" })))
-    } else {
-        (StatusCode::NOT_FOUND, Json(json!({ "error": "Rule not found" })))
+) -> Result<(StatusCode, Json<serde_json::Value>), (StatusCode, Json<serde_json::Value>)> {
+    match open_default_db() {
+        Ok(db) => {
+            match rule_id.parse::<i64>() {
+                Ok(id) => {
+                    // First get current state
+                    match db.get_rules() {
+                        Ok(rules) => {
+                            if let Some(rule) = rules.into_iter().find(|r| r.id == id) {
+                                let new_enabled = !rule.enabled;
+                                match db.toggle_rule(id, new_enabled) {
+                                    Ok(_) => {
+                                        let status = if new_enabled { "enabled" } else { "disabled" };
+                                        Ok((StatusCode::OK, Json(json!({ "message": format!("Rule {} successfully", status), "enabled": new_enabled }))))
+                                    },
+                                    Err(e) => {
+                                        eprintln!("Failed to toggle rule: {}", e);
+                                        Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Failed to toggle rule" }))))
+                                    }
+                                }
+                            } else {
+                                Err((StatusCode::NOT_FOUND, Json(json!({ "error": "Rule not found" }))))
+                            }
+                        },
+                        Err(e) => {
+                            eprintln!("Database error: {}", e);
+                            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Database error" }))))
+                        }
+                    }
+                },
+                Err(_) => Err((StatusCode::BAD_REQUEST, Json(json!({ "error": "Invalid rule ID" }))))
+            }
+        },
+        Err(e) => {
+            eprintln!("Failed to open database: {}", e);
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Failed to open database" }))))
+        }
     }
 }
 
 /// Get firewall status
 #[axum::debug_handler]
 pub async fn get_status(
-    State((firewall, _network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
+    State((firewall, _network_manager, _log_manager)): State<AppState>,
 ) -> Json<FirewallStatus> {
     let firewall = firewall.read().await;
     let status = firewall.get_status().await;
@@ -76,7 +268,7 @@ pub async fn get_status(
 /// Get firewall statistics
 #[axum::debug_handler]
 pub async fn get_statistics(
-    State((firewall, _network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
+    State((firewall, _network_manager, _log_manager)): State<AppState>,
 ) -> Json<FirewallStatistics> {
     let firewall = firewall.read().await;
     let stats = firewall.get_statistics().await;
@@ -86,7 +278,7 @@ pub async fn get_statistics(
 /// Toggle firewall enabled/disabled state
 #[axum::debug_handler]
 pub async fn toggle_firewall(
-    State((firewall, _network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
+    State((firewall, _network_manager, _log_manager)): State<AppState>,
 ) -> (StatusCode, Json<serde_json::Value>) {
     let mut firewall = firewall.write().await;
     let current_status = firewall.get_status().await;
@@ -97,12 +289,6 @@ pub async fn toggle_firewall(
         firewall.enable().await;
         (StatusCode::OK, Json(json!({ "message": "Firewall enabled", "status": "enabled" })))
     }
-}
-
-/// Serve the dashboard HTML
-#[axum::debug_handler]
-pub async fn serve_dashboard() -> Html<&'static str> {
-    Html(include_str!("../static/dashboard.html"))
 }
 
 // --- Dashboard ---
@@ -126,39 +312,61 @@ pub async fn security_topology() -> Json<SecurityTopology> {
 // --- Network ---
 pub async fn network_interfaces() -> Json<Vec<NetworkInterface>> {
     Json(vec![
-        NetworkInterface { 
+        NetworkInterface {
             id: 1,
-            name: "eth0".to_string(), 
+            name: "eth0".to_string(),
             alias: Some("WAN".to_string()),
             interface_type: "ethernet".to_string(),
-            status: "up".to_string(),
-            ip_address: Some("192.168.1.2".to_string()),
-            netmask: Some("255.255.255.0".to_string()),
-            gateway: Some("192.168.1.1".to_string()),
-            mtu: 1500,
-            speed: Some(1000),
-            duplex: Some("full".to_string()),
-            vlan_id: None,
-            zone_id: Some(1),
-            description: Some("WAN Interface".to_string()),
+            vrf_id: None,
+            role: Some("WAN".to_string()),
+            bandwidth_up: Some(1000),
+            bandwidth_down: Some(1000),
+            addressing_mode: AddressingMode::DHCP,
+            status: Some("up".to_string()),
+            manual_ip: None,
+            manual_netmask: None,
+            manual_gateway: None,
+            manual_dns: None,
+            dhcp_ip: Some("192.168.1.2".to_string()),
+            dhcp_netmask: Some("255.255.255.0".to_string()),
+            dhcp_gateway: Some("192.168.1.1".to_string()),
+            dhcp_dns: Some("8.8.8.8".to_string()),
+            pppoe_username: None,
+            pppoe_password: None,
+            pppoe_ip: None,
+            pppoe_netmask: None,
+            pppoe_gateway: None,
+            pppoe_dns: None,
+            last_renewed: None,
             created_at: chrono::Utc::now(),
             updated_at: chrono::Utc::now(),
         },
-        NetworkInterface { 
+        NetworkInterface {
             id: 2,
-            name: "eth1".to_string(), 
+            name: "eth1".to_string(),
             alias: Some("LAN".to_string()),
             interface_type: "ethernet".to_string(),
-            status: "down".to_string(),
-            ip_address: Some("192.168.1.3".to_string()),
-            netmask: Some("255.255.255.0".to_string()),
-            gateway: None,
-            mtu: 1500,
-            speed: Some(1000),
-            duplex: Some("full".to_string()),
-            vlan_id: None,
-            zone_id: Some(2),
-            description: Some("LAN Interface".to_string()),
+            vrf_id: None,
+            role: Some("LAN".to_string()),
+            bandwidth_up: Some(1000),
+            bandwidth_down: Some(1000),
+            addressing_mode: AddressingMode::Manual,
+            status: Some("up".to_string()),
+            manual_ip: Some("10.0.0.1".to_string()),
+            manual_netmask: Some("255.255.255.0".to_string()),
+            manual_gateway: None,
+            manual_dns: None,
+            dhcp_ip: None,
+            dhcp_netmask: None,
+            dhcp_gateway: None,
+            dhcp_dns: None,
+            pppoe_username: None,
+            pppoe_password: None,
+            pppoe_ip: None,
+            pppoe_netmask: None,
+            pppoe_gateway: None,
+            pppoe_dns: None,
+            last_renewed: None,
             created_at: chrono::Utc::now(),
             updated_at: chrono::Utc::now(),
         },
@@ -286,7 +494,7 @@ pub async fn wifi_ssids() -> Json<Vec<WifiSsid>> {
 /// Get physical ports summary
 #[axum::debug_handler]
 pub async fn get_physical_ports_summary(
-    State((_firewall, network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
+    State((_firewall, network_manager, _log_manager)): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let network_manager = network_manager.read().await;
     match network_manager.get_physical_ports_summary().await {
@@ -301,7 +509,7 @@ pub async fn get_physical_ports_summary(
 /// Get detailed information for a specific port
 #[axum::debug_handler]
 pub async fn get_port_details(
-    State((_firewall, network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
+    State((_firewall, network_manager, _log_manager)): State<AppState>,
     Path(port_id): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let network_manager = network_manager.read().await;
@@ -321,7 +529,7 @@ pub async fn get_port_details(
 /// Get real-time statistics for a port
 #[axum::debug_handler]
 pub async fn get_port_statistics(
-    State((_firewall, network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
+    State((_firewall, network_manager, _log_manager)): State<AppState>,
     Path(interface_name): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let network_manager = network_manager.read().await;
@@ -337,16 +545,10 @@ pub async fn get_port_statistics(
 /// Get all physical ports with detailed information
 #[axum::debug_handler]
 pub async fn get_all_physical_ports(
-    State((_firewall, network_manager)): State<(Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>)>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let network_manager = network_manager.read().await;
-    match network_manager.detect_physical_ports().await {
-        Ok(hardware) => Ok(Json(json!(hardware))),
-        Err(e) => Err((
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "error": format!("Failed to detect physical ports: {}", e) }))
-        ))
-    }
+    _state: State<AppState> // not needed for this endpoint
+) -> Result<Json<Vec<String>>, (StatusCode, Json<serde_json::Value>)> {
+    let ports = get_physical_ports();
+    Ok(Json(ports))
 }
 
 // --- System & Configuration API ---
@@ -820,4 +1022,214 @@ pub async fn get_virtual_machines() -> Json<Vec<serde_json::Value>> {
             "license_key": "VM-002-XXX-XXX"
         })
     ])
+}
+
+/// Get all network interfaces
+#[axum::debug_handler]
+pub async fn get_interfaces() -> Result<Json<Vec<NetworkInterface>>, (StatusCode, Json<serde_json::Value>)> {
+    match open_default_network_db() {
+        Ok(db) => {
+            // Sync physical ports before returning
+            let _ = db.sync_physical_ports();
+            match db.get_interfaces() {
+                Ok(interfaces) => Ok(Json(interfaces)),
+                Err(e) => {
+                    eprintln!("Database error: {}", e);
+                    Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Database error" }))))
+                }
+            }
+        },
+        Err(e) => {
+            eprintln!("Failed to open database: {}", e);
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Failed to open database" }))))
+        }
+    }
+}
+
+/// Get a network interface by ID
+#[axum::debug_handler]
+pub async fn get_interface_by_id(Path(id): Path<i32>) -> Result<Json<NetworkInterface>, (StatusCode, Json<serde_json::Value>)> {
+    match open_default_network_db() {
+        Ok(db) => {
+            match db.get_interfaces() {
+                Ok(interfaces) => {
+                    if let Some(iface) = interfaces.into_iter().find(|iface| iface.id == id) {
+                        Ok(Json(iface))
+                    } else {
+                        Err((StatusCode::NOT_FOUND, Json(serde_json::json!({ "error": "Interface not found" }))))
+                    }
+                },
+                Err(e) => {
+                    eprintln!("Database error: {}", e);
+                    Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Database error" }))))
+                }
+            }
+        },
+        Err(e) => {
+            eprintln!("Failed to open database: {}", e);
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Failed to open database" }))))
+        }
+    }
+}
+
+/// Add a new network interface
+#[axum::debug_handler]
+pub async fn add_interface(Json(iface): Json<NetworkInterface>) -> Result<(StatusCode, Json<NetworkInterface>), (StatusCode, Json<serde_json::Value>)> {
+    match open_default_network_db() {
+        Ok(db) => {
+            match db.add_interface(&iface) {
+                Ok(id) => {
+                    let mut iface = iface;
+                    iface.id = id as i32;
+                    Ok((StatusCode::CREATED, Json(iface)))
+                },
+                Err(e) => {
+                    eprintln!("Failed to add interface: {}", e);
+                    Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Failed to add interface" }))))
+                }
+            }
+        },
+        Err(e) => {
+            eprintln!("Failed to open database: {}", e);
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Failed to open database" }))))
+        }
+    }
+}
+
+/// Update a network interface
+#[axum::debug_handler]
+pub async fn update_interface(Path(id): Path<i32>, Json(iface): Json<NetworkInterface>) -> Result<(StatusCode, Json<NetworkInterface>), (StatusCode, Json<serde_json::Value>)> {
+    match open_default_network_db() {
+        Ok(db) => {
+            let mut iface = iface;
+            iface.id = id;
+            match db.update_interface(&iface) {
+                Ok(_) => Ok((StatusCode::OK, Json(iface))),
+                Err(e) => {
+                    eprintln!("Failed to update interface: {}", e);
+                    Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Failed to update interface" }))))
+                }
+            }
+        },
+        Err(e) => {
+            eprintln!("Failed to open database: {}", e);
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Failed to open database" }))))
+        }
+    }
+}
+
+/// Delete a network interface
+#[axum::debug_handler]
+pub async fn delete_interface(Path(id): Path<i32>) -> Result<(StatusCode, Json<serde_json::Value>), (StatusCode, Json<serde_json::Value>)> {
+    match open_default_network_db() {
+        Ok(db) => {
+            match db.delete_interface(id) {
+                Ok(_) => Ok((StatusCode::OK, Json(serde_json::json!({ "message": "Interface deleted successfully" })))),
+                Err(e) => {
+                    eprintln!("Failed to delete interface: {}", e);
+                    Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Failed to delete interface" }))))
+                }
+            }
+        },
+        Err(e) => {
+            eprintln!("Failed to open database: {}", e);
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Failed to open database" }))))
+        }
+    }
+}
+
+#[axum::debug_handler]
+pub async fn serve_network_interfaces() -> axum::response::Html<&'static str> {
+    axum::response::Html(include_str!("../static/network_interfaces.html"))
+}
+
+#[axum::debug_handler]
+pub async fn serve_dashboard() -> axum::response::Html<&'static str> {
+    axum::response::Html(include_str!("../static/dashboard.html"))
+}
+
+#[derive(Deserialize)]
+pub struct LogQuery {
+    pub log_type: Option<String>,
+    pub from: Option<String>, // ISO8601
+    pub to: Option<String>,   // ISO8601
+    pub severity: Option<String>,
+    pub limit: Option<usize>,
+    pub offset: Option<usize>,
+}
+
+#[axum::debug_handler]
+pub async fn get_logs(
+    State((_firewall, _network_manager, log_manager)): State<AppState>,
+    Query(params): Query<LogQuery>
+) -> Result<Json<Vec<LogEntry>>, (StatusCode, Json<serde_json::Value>)> {
+    // Convert query parameters to Filter
+    let mut filter = Filter {
+        start_time: None,
+        end_time: None,
+        log_types: None,
+        source_ip: None,
+        destination_ip: None,
+        user: None,
+        action: None,
+        severity: None,
+        limit: params.limit,
+        offset: params.offset,
+    };
+
+    // Parse time filters
+    if let Some(from) = params.from {
+        if let Ok(dt) = DateTime::parse_from_rfc3339(&from) {
+            filter.start_time = Some(dt.with_timezone(&Utc));
+        }
+    }
+    
+    if let Some(to) = params.to {
+        if let Ok(dt) = DateTime::parse_from_rfc3339(&to) {
+            filter.end_time = Some(dt.with_timezone(&Utc));
+        }
+    }
+
+    // Parse log type filter
+    if let Some(log_type) = params.log_type {
+        let log_types = match log_type.as_str() {
+            "traffic" => vec![LogType::Traffic],
+            "threat" => vec![LogType::Threat],
+            "system" => vec![LogType::System],
+            "security" => vec![LogType::Security],
+            _ => vec![LogType::Traffic, LogType::Threat, LogType::System, LogType::Security],
+        };
+        filter.log_types = Some(log_types);
+    }
+
+    // Query logs using LogManager
+    match log_manager.query_logs(&filter).await {
+        Ok(log_entries) => {
+            // Convert LogManager::LogEntry to models::LogEntry
+            let converted_logs: Vec<LogEntry> = log_entries.into_iter().map(|entry| {
+                let log_type = match entry.log_type {
+                    LogType::Traffic => "traffic".to_string(),
+                    LogType::Threat => "threat".to_string(),
+                    LogType::System => "system".to_string(),
+                    LogType::Security => "security".to_string(),
+                };
+                LogEntry {
+                    id: 0, // Not used for file-based logs
+                    timestamp: entry.timestamp,
+                    log_type,
+                    message: entry.data.to_string(),
+                    severity: None, // Extract from data if needed
+                    source_ip: None, // Extract from data if needed
+                    dest_ip: None, // Extract from data if needed
+                    user: None, // Extract from data if needed
+                    action: None, // Extract from data if needed
+                }
+            }).collect();
+            Ok(Json(converted_logs))
+        },
+        Err(e) => {
+            eprintln!("Failed to query logs: {}", e);
+            Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))))
+        }
+    }
 } 

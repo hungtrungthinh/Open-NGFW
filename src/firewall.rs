@@ -93,26 +93,20 @@ impl Firewall {
 
         // Log the rule addition
         if let Some(log_manager) = &self.log_manager {
-            let metadata = LogMetadata {
-                source: "firewall".to_string(),
-                component: "rule_management".to_string(),
-                session_id: None,
-                user: Some("admin".to_string()),
-                ip_address: Some("127.0.0.1".to_string()),
-            };
-
+            let metadata = LogMetadata::system_event(
+                "add_rule",
+                "info",
+                "firewall",
+                "security"
+            );
             let log_data = serde_json::json!({
-                "operation": "add_rule",
-                "rule_id": rule.id,
+                "event": "rule_added",
                 "rule_name": rule.name,
-                "action": format!("{:?}", rule.action),
-                "protocol": format!("{:?}", rule.protocol),
+                "rule_action": rule.action,
                 "source_ip": rule.source_ip,
-                "destination_ip": rule.destination_ip,
-                "enabled": rule.enabled
+                "destination_ip": rule.destination_ip
             });
-
-            log_manager.log(LogType::System, log_data, metadata).await;
+            let _ = log_manager.log_system(metadata, log_data).await;
         }
     }
 
@@ -124,21 +118,18 @@ impl Firewall {
 
             // Log the rule removal
             if let Some(log_manager) = &self.log_manager {
-                let metadata = LogMetadata {
-                    source: "firewall".to_string(),
-                    component: "rule_management".to_string(),
-                    session_id: None,
-                    user: Some("admin".to_string()),
-                    ip_address: Some("127.0.0.1".to_string()),
-                };
-
+                let metadata = LogMetadata::system_event(
+                    "remove_rule",
+                    "info",
+                    "firewall",
+                    "security"
+                );
                 let log_data = serde_json::json!({
-                    "operation": "remove_rule",
+                    "event": "rule_removed",
                     "rule_id": rule_id,
                     "success": true
                 });
-
-                log_manager.log(LogType::System, log_data, metadata).await;
+                let _ = log_manager.log_system(metadata, log_data).await;
             }
 
             true
@@ -170,23 +161,20 @@ impl Firewall {
 
             // Log the rule toggle
             if let Some(log_manager) = &self.log_manager {
-                let metadata = LogMetadata {
-                    source: "firewall".to_string(),
-                    component: "rule_management".to_string(),
-                    session_id: None,
-                    user: Some("admin".to_string()),
-                    ip_address: Some("127.0.0.1".to_string()),
-                };
-
+                let metadata = LogMetadata::system_event(
+                    "toggle_rule",
+                    "info",
+                    "firewall",
+                    "security"
+                );
                 let log_data = serde_json::json!({
-                    "operation": "toggle_rule",
+                    "event": "rule_toggled",
                     "rule_id": rule_id,
                     "rule_name": rule.name,
                     "new_status": rule.enabled,
                     "success": true
                 });
-
-                log_manager.log(LogType::System, log_data, metadata).await;
+                let _ = log_manager.log_system(metadata, log_data).await;
             }
 
             true
@@ -201,7 +189,18 @@ impl Firewall {
         let active_rules = rules.values().filter(|r| r.enabled).count();
         let total_rules = rules.len();
         
-        let stats = self.statistics.lock().unwrap();
+        let stats = {
+            let stats_guard = self.statistics.lock().unwrap();
+            FirewallStatistics {
+                total_packets_processed: stats_guard.total_packets_processed,
+                packets_allowed: stats_guard.packets_allowed,
+                packets_blocked: stats_guard.packets_blocked,
+                packets_dropped: stats_guard.packets_dropped,
+                connections_tracked: stats_guard.connections_tracked,
+                memory_usage: stats_guard.memory_usage,
+                cpu_usage: stats_guard.cpu_usage,
+            }
+        };
         
         FirewallStatus {
             enabled: *self.enabled.read().await,
@@ -224,9 +223,6 @@ impl Firewall {
             return PacketDecision::Allow;
         }
 
-        let mut stats = self.statistics.lock().unwrap();
-        stats.total_packets_processed += 1;
-
         let rules = self.rules.read().await;
         
         for rule in rules.values() {
@@ -235,17 +231,33 @@ impl Firewall {
             }
 
             if self.matches_rule(&packet_info, rule) {
+                // Update statistics
+                {
+                    let mut stats = self.statistics.lock().unwrap();
+                    stats.total_packets_processed += 1;
+                    
+                    match rule.action {
+                        crate::models::RuleAction::Allow => {
+                            stats.packets_allowed += 1;
+                        }
+                        crate::models::RuleAction::Deny => {
+                            stats.packets_blocked += 1;
+                        }
+                        crate::models::RuleAction::Drop => {
+                            stats.packets_dropped += 1;
+                        }
+                    }
+                }
+                
+                // Return decision
                 match rule.action {
                     crate::models::RuleAction::Allow => {
-                        stats.packets_allowed += 1;
                         return PacketDecision::Allow;
                     }
                     crate::models::RuleAction::Deny => {
-                        stats.packets_blocked += 1;
                         return PacketDecision::Deny;
                     }
                     crate::models::RuleAction::Drop => {
-                        stats.packets_dropped += 1;
                         return PacketDecision::Drop;
                     }
                 }
@@ -253,7 +265,11 @@ impl Firewall {
         }
 
         // Default policy: deny unknown traffic
-        stats.packets_blocked += 1;
+        {
+            let mut stats = self.statistics.lock().unwrap();
+            stats.total_packets_processed += 1;
+            stats.packets_blocked += 1;
+        }
         PacketDecision::Deny
     }
 
@@ -302,70 +318,66 @@ impl Firewall {
 
     /// Check if packet protocol matches rule protocol
     fn matches_protocol(&self, packet_protocol: &Protocol, rule_protocol: &crate::models::Protocol) -> bool {
-        match rule_protocol {
-            crate::models::Protocol::Any => true,
-            crate::models::Protocol::TCP => matches!(packet_protocol, Protocol::TCP),
-            crate::models::Protocol::UDP => matches!(packet_protocol, Protocol::UDP),
-            crate::models::Protocol::ICMP => matches!(packet_protocol, Protocol::ICMP),
+        match (packet_protocol, rule_protocol) {
+            (Protocol::TCP, crate::models::Protocol::TCP) => true,
+            (Protocol::UDP, crate::models::Protocol::UDP) => true,
+            (Protocol::ICMP, crate::models::Protocol::ICMP) => true,
+            (_, crate::models::Protocol::Any) => true,
+            _ => false,
         }
     }
 
     /// Check if packet direction matches rule direction
     fn matches_direction(&self, packet_direction: &Direction, rule_direction: &crate::models::Direction) -> bool {
-        match rule_direction {
-            crate::models::Direction::Both => true,
-            crate::models::Direction::Inbound => matches!(packet_direction, Direction::Inbound),
-            crate::models::Direction::Outbound => matches!(packet_direction, Direction::Outbound),
+        match (packet_direction, rule_direction) {
+            (Direction::Inbound, crate::models::Direction::Inbound) => true,
+            (Direction::Outbound, crate::models::Direction::Outbound) => true,
+            (_, crate::models::Direction::Both) => true,
+            _ => false,
         }
     }
 
     /// Enable the firewall
     pub async fn enable(&mut self) {
-        *self.enabled.write().await = true;
+        let mut enabled = self.enabled.write().await;
+        *enabled = true;
         info!("Firewall enabled");
 
         // Log the firewall enable
         if let Some(log_manager) = &self.log_manager {
-            let metadata = LogMetadata {
-                source: "firewall".to_string(),
-                component: "system".to_string(),
-                session_id: None,
-                user: Some("admin".to_string()),
-                ip_address: Some("127.0.0.1".to_string()),
-            };
-
+            let metadata = LogMetadata::system_event(
+                "enable_firewall",
+                "info",
+                "firewall",
+                "security"
+            );
             let log_data = serde_json::json!({
-                "operation": "enable_firewall",
-                "status": "enabled",
-                "timestamp": chrono::Utc::now().to_rfc3339()
+                "event": "firewall_enabled",
+                "success": true
             });
-
-            log_manager.log(LogType::System, log_data, metadata).await;
+            let _ = log_manager.log_system(metadata, log_data).await;
         }
     }
 
     /// Disable the firewall
     pub async fn disable(&mut self) {
-        *self.enabled.write().await = false;
+        let mut enabled = self.enabled.write().await;
+        *enabled = false;
         info!("Firewall disabled");
 
         // Log the firewall disable
         if let Some(log_manager) = &self.log_manager {
-            let metadata = LogMetadata {
-                source: "firewall".to_string(),
-                component: "system".to_string(),
-                session_id: None,
-                user: Some("admin".to_string()),
-                ip_address: Some("127.0.0.1".to_string()),
-            };
-
+            let metadata = LogMetadata::system_event(
+                "disable_firewall",
+                "info",
+                "firewall",
+                "security"
+            );
             let log_data = serde_json::json!({
-                "operation": "disable_firewall",
-                "status": "disabled",
-                "timestamp": chrono::Utc::now().to_rfc3339()
+                "event": "firewall_disabled",
+                "success": true
             });
-
-            log_manager.log(LogType::System, log_data, metadata).await;
+            let _ = log_manager.log_system(metadata, log_data).await;
         }
     }
 

@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .sidebar {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #166534 0%, #15803d 100%);
         }
         .menu-item:hover {
             background: rgba(255, 255, 255, 0.1);
@@ -20,137 +20,21 @@
         .section {
             transition: opacity 0.3s ease;
         }
+        .hidden {
+            display: none !important;
+        }
+        .section:not(.hidden) {
+            display: block !important;
+        }
     </style>
 </head>
 <body class="flex bg-gray-100 min-h-screen">
-    <!-- Sidebar -->
-    <aside class="sidebar flex flex-col p-4 bg-green-800 text-white min-w-[220px] max-w-[240px] h-screen border-r border-green-900">
-        <div class="logo flex items-center gap-2 text-xl font-bold mb-6">
-            <i class="fa-solid fa-shield-halved text-yellow-400"></i> Open-NGFW
-        </div>
-        <nav class="flex-1">
-            <ul id="sidebarMenu" class="space-y-1">
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('dashboard-sub', this)">
-                        <i class="fa-solid fa-gauge-high"></i> Dashboard <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="dashboard-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('status', this)"><i class="fa-solid fa-circle-info"></i> Status</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('security', this)"><i class="fa-solid fa-shield"></i> Security</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('network', this)"><i class="fa-solid fa-ethernet"></i> Network</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('users_devices', this)"><i class="fa-solid fa-users"></i> Users & Devices</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('system', this)"><i class="fa-solid fa-gear"></i> System</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ot_dashboard', this)"><i class="fa-solid fa-industry"></i> OT Dashboard</li>
-                    </ul>
-                </li>
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('entry-sub', this)">
-                        <i class="fa-solid fa-shield-halved"></i> Security Entry <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="entry-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_topology', this)"><i class="fa-solid fa-diagram-project"></i> Topology</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_physical', this)"><i class="fa-solid fa-server"></i> Physical Topology</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_logical', this)"><i class="fa-solid fa-sitemap"></i> Logical Topology</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_automation', this)"><i class="fa-solid fa-robot"></i> Automation</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('entry_connectors', this)"><i class="fa-solid fa-plug"></i> Entry Connectors</li>
-                    </ul>
-                </li>
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('network-sub', this)">
-                        <i class="fa-solid fa-ethernet"></i> Network <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="network-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('interfaces', this)"><i class="fa-solid fa-network-wired"></i> Interfaces</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('static_routes', this)"><i class="fa-solid fa-route"></i> Static Routes</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('policy_routes', this)"><i class="fa-solid fa-random"></i> Policy Routes</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('routing_objects', this)"><i class="fa-solid fa-cube"></i> Routing Objects</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('sdwan', this)"><i class="fa-solid fa-network-wired"></i> SD-WAN</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('dns', this)"><i class="fa-solid fa-globe"></i> DNS</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('extender', this)"><i class="fa-solid fa-signal"></i> Extender</li>
-                    </ul>
-                </li>
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('policy-sub', this)">
-                        <i class="fa-solid fa-shield"></i> Policy & Objects <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="policy-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('firewall_policy', this)"><i class="fa-solid fa-shield-halved"></i> Firewall Policy</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('virtual_ips', this)"><i class="fa-solid fa-network-wired"></i> Virtual IPs</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('traffic_shaping', this)"><i class="fa-solid fa-sliders-h"></i> Traffic Shaping</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('addresses', this)"><i class="fa-solid fa-address-book"></i> Addresses</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('services', this)"><i class="fa-solid fa-concierge-bell"></i> Services</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('schedules', this)"><i class="fa-solid fa-calendar-alt"></i> Schedules</li>
-                    </ul>
-                </li>
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('profiles-sub', this)">
-                        <i class="fa-solid fa-shield-virus"></i> Security Profiles <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="profiles-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('antivirus', this)"><i class="fa-solid fa-bug"></i> Antivirus</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('web_filter', this)"><i class="fa-solid fa-filter"></i> Web Filter</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('dns_filter', this)"><i class="fa-solid fa-globe"></i> DNS Filter</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ips', this)"><i class="fa-solid fa-shield-alt"></i> Intrusion Prevention (IPS)</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('app_control', this)"><i class="fa-solid fa-th-large"></i> Application Control</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('dlp', this)"><i class="fa-solid fa-lock"></i> Data Loss Prevention (DLP)</li>
-                    </ul>
-                </li>
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('vpn-sub', this)">
-                        <i class="fa-solid fa-lock"></i> VPN <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="vpn-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ipsec_tunnels', this)"><i class="fa-solid fa-link"></i> IPsec Tunnels</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ssl_vpn_settings', this)"><i class="fa-solid fa-cog"></i> SSL-VPN Settings</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ssl_vpn_portals', this)"><i class="fa-solid fa-door-open"></i> SSL-VPN Portals</li>
-                    </ul>
-                </li>
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('system-sub', this)">
-                        <i class="fa-solid fa-gear"></i> System <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="system-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('administrators', this)"><i class="fa-solid fa-user-shield"></i> Administrators</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('guard', this)"><i class="fa-solid fa-shield"></i> Guard</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('certificates', this)"><i class="fa-solid fa-certificate"></i> Certificates</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('settings', this)"><i class="fa-solid fa-sliders-h"></i> Settings</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('ha', this)"><i class="fa-solid fa-layer-group"></i> High Availability (HA)</li>
-                    </ul>
-                </li>
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('log-sub', this)">
-                        <i class="fa-solid fa-file-lines"></i> Log & Report <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="log-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('local_traffic_log', this)"><i class="fa-solid fa-traffic-light"></i> Local Traffic Log</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('analyzer', this)"><i class="fa-solid fa-chart-bar"></i> Analyzer</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('reports', this)"><i class="fa-solid fa-file-alt"></i> Reports</li>
-                    </ul>
-                </li>
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('monitor-sub', this)">
-                        <i class="fa-solid fa-desktop"></i> Monitor <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="monitor-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('routing_monitor', this)"><i class="fa-solid fa-route"></i> Routing Monitor</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('vpn_monitor', this)"><i class="fa-solid fa-lock"></i> VPN Monitor</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('sdwan_monitor', this)"><i class="fa-solid fa-network-wired"></i> SD-WAN Monitor</li>
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('wifi_monitor', this)"><i class="fa-solid fa-wifi"></i> Wi-Fi Monitor</li>
-                    </ul>
-                </li>
-                <li>
-                    <div class="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-700 cursor-pointer font-semibold" onclick="toggleMenu('wifi-switch-sub', this)">
-                        <i class="fa-solid fa-wifi"></i> Wi-Fi & Switch Controller <span class="ml-auto text-xs">+</span>
-                    </div>
-                    <ul class="submenu hidden ml-4 border-l border-green-700 pl-3 space-y-1" id="wifi-switch-sub">
-                        <li class="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-700 cursor-pointer text-sm" onclick="showSection('wifi_ssids', this)"><i class="fa-solid fa-wifi"></i> Wi-Fi SSIDs</li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-        <div class="mt-auto text-xs text-gray-300 text-center pt-4">Open-NGFW v1.1.2</div>
-    </aside>
-    <!-- Main content -->
+    <div id="sidebar-container"></div>
+    <script>
+    fetch('/static/sidebar.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('sidebar-container').innerHTML = html; });
+    </script>
     <div class="flex flex-col flex-1 min-h-screen">
         <div class="topbar flex items-center justify-end h-12 bg-green-800 text-white px-8">
             <div class="user flex items-center gap-2 text-sm">
@@ -370,7 +254,6 @@
             <section id="entry_logical" class="section hidden"></section>
             <section id="entry_automation" class="section hidden"></section>
             <section id="entry_connectors" class="section hidden"></section>
-            <section id="interfaces" class="section hidden"></section>
             <section id="static_routes" class="section hidden"></section>
             <section id="policy_routes" class="section hidden"></section>
             <section id="routing_objects" class="section hidden"></section>
@@ -405,197 +288,623 @@
             <section id="sdwan_monitor" class="section hidden"></section>
             <section id="wifi_monitor" class="section hidden"></section>
             <section id="wifi_ssids" class="section hidden"></section>
+            <!-- Network Interfaces Section -->
+            <div id="section-interfaces" class="section hidden">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-green-800 flex items-center gap-2"><i class="fa-solid fa-network-wired"></i> Network Interfaces</h2>
+                <button id="add-interface-btn" class="bg-green-700 text-white px-4 py-1 rounded shadow hover:bg-green-800"><i class="fa fa-plus"></i> Add Interface</button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border rounded shadow text-sm">
+                  <thead class="bg-green-50">
+                    <tr>
+                      <th class="px-3 py-2 border-b">Name</th>
+                      <th class="px-3 py-2 border-b">Alias</th>
+                      <th class="px-3 py-2 border-b">Type</th>
+                      <th class="px-3 py-2 border-b">Role</th>
+                      <th class="px-3 py-2 border-b">Mode</th>
+                      <th class="px-3 py-2 border-b">Status</th>
+                      <th class="px-3 py-2 border-b">IP Address</th>
+                      <th class="px-3 py-2 border-b">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="interfaces-table-body">
+                    <!-- Dynamic rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- Edit Interface Modal -->
+            <div id="edit-interface-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+              <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+                <button onclick="closeEditInterfaceModal()" class="absolute top-2 right-2 text-gray-400 hover:text-red-600"><i class="fa fa-times"></i></button>
+                <h3 class="text-lg font-bold text-green-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Edit Interface</h3>
+                <form id="edit-interface-form" class="space-y-4">
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-xs font-semibold mb-1">Name</label>
+                      <input type="text" id="iface-name" class="w-full border rounded px-2 py-1" readonly>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold mb-1">Alias</label>
+                      <input type="text" id="iface-alias" class="w-full border rounded px-2 py-1">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold mb-1">Type</label>
+                      <input type="text" id="iface-type" class="w-full border rounded px-2 py-1" readonly>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold mb-1">Role</label>
+                      <select id="iface-role" class="w-full border rounded px-2 py-1">
+                        <option value="WAN">WAN</option>
+                        <option value="LAN">LAN</option>
+                        <option value="DMZ">DMZ</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold mb-1">VRF ID</label>
+                      <input type="number" id="iface-vrf" class="w-full border rounded px-2 py-1" min="0">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold mb-1">Bandwidth Up (kbps)</label>
+                      <input type="number" id="iface-bandwidth-up" class="w-full border rounded px-2 py-1" min="0">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold mb-1">Bandwidth Down (kbps)</label>
+                      <input type="number" id="iface-bandwidth-down" class="w-full border rounded px-2 py-1" min="0">
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <label class="block text-xs font-semibold mb-1">Addressing Mode</label>
+                    <div class="flex gap-4 mb-2">
+                      <button type="button" class="addressing-tab px-3 py-1 rounded border text-sm" data-mode="Manual" onclick="switchAddressingTab('Manual')">Manual</button>
+                      <button type="button" class="addressing-tab px-3 py-1 rounded border text-sm" data-mode="DHCP" onclick="switchAddressingTab('DHCP')">DHCP</button>
+                      <button type="button" class="addressing-tab px-3 py-1 rounded border text-sm" data-mode="PPPoE" onclick="switchAddressingTab('PPPoE')">PPPoE</button>
+                    </div>
+                    <!-- Manual -->
+                    <div id="manual-fields" class="addressing-fields hidden">
+                      <div class="grid grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">IP Address</label>
+                          <input type="text" id="manual-ip" class="w-full border rounded px-2 py-1">
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Netmask</label>
+                          <input type="text" id="manual-netmask" class="w-full border rounded px-2 py-1">
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Gateway</label>
+                          <input type="text" id="manual-gateway" class="w-full border rounded px-2 py-1">
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">DNS</label>
+                          <input type="text" id="manual-dns" class="w-full border rounded px-2 py-1">
+                        </div>
+                      </div>
+                    </div>
+                    <!-- DHCP -->
+                    <div id="dhcp-fields" class="addressing-fields hidden">
+                      <div class="flex items-center gap-2 mb-2">
+                        <span id="dhcp-status" class="text-green-700 font-semibold text-sm">Status: <span>Unknown</span></span>
+                        <button type="button" id="dhcp-renew-btn" class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">Renew</button>
+                      </div>
+                      <div class="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Obtained IP/Netmask</label>
+                          <input type="text" id="dhcp-ip" class="w-full border rounded px-2 py-1" readonly>
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Acquired DNS</label>
+                          <input type="text" id="dhcp-dns" class="w-full border rounded px-2 py-1" readonly>
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold mb-1">Default Gateway</label>
+                          <input type="text" id="dhcp-gateway" class="w-full border rounded px-2 py-1" readonly>
+                        </div>
+                      </div>
+                      <div class="flex flex-col gap-2 mb-2">
+                        <label class="inline-flex items-center gap-2 text-xs font-semibold">
+                          <input type="checkbox" id="dhcp-retrieve-gw" class="form-checkbox"> Retrieve default gateway from server
+                        </label>
+                        <label class="inline-flex items-center gap-2 text-xs font-semibold">
+                          <input type="checkbox" id="dhcp-override-dns" class="form-checkbox"> Override internal DNS
+                        </label>
+                        <label class="inline-flex items-center gap-2 text-xs font-semibold">
+                          <input type="checkbox" id="dhcp-create-addr-obj" class="form-checkbox"> Create address object matching subnet
+                        </label>
+                      </div>
+                      <div class="mb-2">
+                        <div class="font-semibold text-xs mb-1">Administrative access (IPv4)</div>
+                        <div class="grid grid-cols-4 gap-2">
+                          <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" id="admin-https"> HTTPS</label>
+                          <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" id="admin-http"> HTTP</label>
+                          <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" id="admin-ssh"> SSH</label>
+                          <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" id="admin-ping"> PING</label>
+                          <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" id="admin-fmg"> FMG-Access</label>
+                          <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" id="admin-snmp"> SNMP</label>
+                          <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" id="admin-ftm"> FTM</label>
+                          <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" id="admin-radius"> RADIUS Accounting</label>
+                        </div>
+                      </div>
+                      <div class="mb-2 grid grid-cols-2 gap-4">
+                        <div>
+                          <div class="font-semibold text-xs mb-1">Receive LLDP</div>
+                          <select id="lldp-receive" class="w-full border rounded px-2 py-1">
+                            <option value="vdom">Use VDOM Setting</option>
+                            <option value="enable">Enable</option>
+                            <option value="disable">Disable</option>
+                          </select>
+                        </div>
+                        <div>
+                          <div class="font-semibold text-xs mb-1">Transmit LLDP</div>
+                          <select id="lldp-transmit" class="w-full border rounded px-2 py-1">
+                            <option value="vdom">Use VDOM Setting</option>
+                            <option value="enable">Enable</option>
+                            <option value="disable">Disable</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 mb-2">
+                        <label class="inline-flex items-center gap-2 text-xs font-semibold">
+                          <input type="checkbox" id="device-detection" class="form-checkbox"> Device detection
+                        </label>
+                      </div>
+                      <div class="mb-2">
+                        <div class="font-semibold text-xs mb-1">Traffic Shaping</div>
+                        <label class="inline-flex items-center gap-2 text-xs font-semibold">
+                          <input type="checkbox" id="traffic-shaping" class="form-checkbox"> Outbound shaping profile
+                        </label>
+                      </div>
+                      <div class="mb-2">
+                        <label class="block text-xs font-semibold mb-1">Comments</label>
+                        <textarea id="iface-comments" class="w-full border rounded px-2 py-1" maxlength="255"></textarea>
+                      </div>
+                      <div class="mb-2 flex items-center gap-4">
+                        <div class="font-semibold text-xs">Status</div>
+                        <label class="inline-flex items-center gap-1 text-xs"><input type="radio" name="iface-status" value="enabled" checked> <span class="text-green-700">Enabled</span></label>
+                        <label class="inline-flex items-center gap-1 text-xs"><input type="radio" name="iface-status" value="disabled"> <span class="text-red-600">Disabled</span></label>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- PPPoE -->
+                  <div id="pppoe-fields" class="addressing-fields hidden">
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-xs font-semibold mb-1">PPPoE Username</label>
+                        <input type="text" id="pppoe-username" class="w-full border rounded px-2 py-1">
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold mb-1">PPPoE Password</label>
+                        <input type="password" id="pppoe-password" class="w-full border rounded px-2 py-1">
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold mb-1">PPPoE IP</label>
+                        <input type="text" id="pppoe-ip" class="w-full border rounded px-2 py-1">
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold mb-1">PPPoE DNS</label>
+                        <input type="text" id="pppoe-dns" class="w-full border rounded px-2 py-1">
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold mb-1">PPPoE Gateway</label>
+                        <input type="text" id="pppoe-gateway" class="w-full border rounded px-2 py-1">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" class="bg-gray-200 text-gray-700 px-4 py-1 rounded hover:bg-gray-300" onclick="closeEditInterfaceModal()">Cancel</button>
+                    <button type="submit" class="bg-green-700 text-white px-6 py-1 rounded shadow hover:bg-green-800">Save</button>
+                  </div>
+                </form>
+              </div>
+            </div>
         </main>
     </div>
-    <script>
-        function toggleMenu(submenuId, el) {
-            const submenu = document.getElementById(submenuId);
-            if (submenu) submenu.classList.toggle('hidden');
-            // Active state for menu-item
-            document.querySelectorAll('.sidebar .menu-item').forEach(item => item.classList.remove('bg-green-700', 'text-white'));
-            el.classList.add('bg-green-700', 'text-white');
+</div>
+<script>
+console.log('dashboard.js loaded');
+function toggleMenu(submenuId, el) {
+    const submenu = document.getElementById(submenuId);
+    if (submenu) submenu.classList.toggle('hidden');
+    // Highlight active menu
+    document.querySelectorAll('.sidebar .menu-item').forEach(item => item.classList.remove('bg-green-700', 'text-white'));
+    el.classList.add('bg-green-700', 'text-white');
+}
+function showSection(section, el) {
+    console.log('showSection called with:', section);
+    document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+    const sectionDiv = document.getElementById('section-' + section) || document.getElementById(section);
+    console.log('Found section div:', sectionDiv);
+    if (sectionDiv) sectionDiv.classList.remove('hidden');
+    document.querySelectorAll('.submenu-item').forEach(item => item.classList.remove('bg-green-700', 'text-yellow-400'));
+    if (el) el.classList.add('bg-green-700', 'text-yellow-400');
+    // Special: load interfaces if needed
+    if (section === 'interfaces') {
+        console.log('Interfaces section detected, calling loadInterfaces');
+        if (typeof loadInterfaces === 'function') {
+            console.log('loadInterfaces function exists, calling it');
+            loadInterfaces();
+        } else {
+            console.error('loadInterfaces function not found');
         }
-        function showSection(sectionId, el) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
-            const section = document.getElementById(sectionId);
-            if (section) section.classList.remove('hidden');
-            document.querySelectorAll('.submenu-item').forEach(item => item.classList.remove('bg-green-700', 'text-yellow-400'));
-            if (el) el.classList.add('bg-green-700', 'text-yellow-400');
+    }
+    // Scroll to top of main content for FortiOS-like UX
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.scrollIntoView({ behavior: 'smooth' });
+}
+// Combine all chart initializations and showSection into a single window.onload
+window.onload = function() {
+    showSection('dashboard');
+    
+    // CPU Chart: 4 core
+    new Chart(document.getElementById('cpuChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ["47 seconds ago", "32 seconds ago", "17 seconds ago", "Now"],
+            datasets: [
+                {
+                    label: 'Core 1',
+                    data: [3, 4, 7, 5],
+                    borderColor: '#50743F',
+                    backgroundColor: 'rgba(80,116,63,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 2
+                },
+                {
+                    label: 'Core 2',
+                    data: [2, 3, 5, 4],
+                    borderColor: '#F6C44B',
+                    backgroundColor: 'rgba(246,196,75,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 2
+                },
+                {
+                    label: 'Core 3',
+                    data: [1, 2, 3, 2],
+                    borderColor: '#EC7B4D',
+                    backgroundColor: 'rgba(236,123,77,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 2
+                },
+                {
+                    label: 'Core 4',
+                    data: [2, 1, 2, 3],
+                    borderColor: '#A2332A',
+                    backgroundColor: 'rgba(162,51,42,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    grid: { color: '#e3e6ea', drawBorder: false },
+                    ticks: { color: '#888', font: { size: 12 } }
+                },
+                y: {
+                    grid: { color: '#e3e6ea', drawBorder: false },
+                    ticks: { color: '#888', font: { size: 12 } },
+                    min: 0, max: 100
+                }
+            },
+            elements: { line: { borderJoinStyle: 'round' } },
+            layout: { padding: 0 },
+            responsive: true,
+            maintainAspectRatio: false
         }
-        // Combine all chart initializations and showSection into a single window.onload
-        window.onload = function() {
-            showSection('dashboard');
-            // CPU Chart: 4 core
-            new Chart(document.getElementById('cpuChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: ["47 seconds ago", "32 seconds ago", "17 seconds ago", "Now"],
-                    datasets: [
-                        {
-                            label: 'Core 1',
-                            data: [3, 4, 7, 5],
-                            borderColor: '#50743F',
-                            backgroundColor: 'rgba(80,116,63,0.08)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Core 2',
-                            data: [2, 3, 5, 4],
-                            borderColor: '#F6C44B',
-                            backgroundColor: 'rgba(246,196,75,0.08)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Core 3',
-                            data: [1, 2, 3, 2],
-                            borderColor: '#EC7B4D',
-                            backgroundColor: 'rgba(236,123,77,0.08)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Core 4',
-                            data: [2, 1, 2, 3],
-                            borderColor: '#A2332A',
-                            backgroundColor: 'rgba(162,51,42,0.08)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        }
-                    ]
+    });
+    // Memory Chart: Used, Free
+    new Chart(document.getElementById('memChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ["47 seconds ago", "32 seconds ago", "17 seconds ago", "Now"],
+            datasets: [
+                {
+                    label: 'Used',
+                    data: [37, 36, 38, 37],
+                    borderColor: '#F6C44B',
+                    backgroundColor: 'rgba(246,196,75,0.13)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 2
                 },
-                options: {
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { enabled: true }
-                    },
-                    scales: {
-                        x: {
-                            grid: { color: '#e3e6ea', drawBorder: false },
-                            ticks: { color: '#888', font: { size: 12 } }
-                        },
-                        y: {
-                            grid: { color: '#e3e6ea', drawBorder: false },
-                            ticks: { color: '#888', font: { size: 12 } },
-                            min: 0, max: 100
-                        }
-                    },
-                    elements: { line: { borderJoinStyle: 'round' } },
-                    layout: { padding: 0 },
-                    responsive: true,
-                    maintainAspectRatio: false
+                {
+                    label: 'Free',
+                    data: [63, 64, 62, 63],
+                    borderColor: '#50743F',
+                    backgroundColor: 'rgba(80,116,63,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 2
                 }
-            });
-            // Memory Chart: Used, Free
-            new Chart(document.getElementById('memChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: ["47 seconds ago", "32 seconds ago", "17 seconds ago", "Now"],
-                    datasets: [
-                        {
-                            label: 'Used',
-                            data: [37, 36, 38, 37],
-                            borderColor: '#F6C44B',
-                            backgroundColor: 'rgba(246,196,75,0.13)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Free',
-                            data: [63, 64, 62, 63],
-                            borderColor: '#50743F',
-                            backgroundColor: 'rgba(80,116,63,0.08)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        }
-                    ]
+            ]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    grid: { color: '#e3e6ea', drawBorder: false },
+                    ticks: { color: '#888', font: { size: 12 } }
                 },
-                options: {
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { enabled: true }
-                    },
-                    scales: {
-                        x: {
-                            grid: { color: '#e3e6ea', drawBorder: false },
-                            ticks: { color: '#888', font: { size: 12 } }
-                        },
-                        y: {
-                            grid: { color: '#e3e6ea', drawBorder: false },
-                            ticks: { color: '#888', font: { size: 12 } },
-                            min: 0, max: 100
-                        }
-                    },
-                    elements: { line: { borderJoinStyle: 'round' } },
-                    layout: { padding: 0 },
-                    responsive: true,
-                    maintainAspectRatio: false
+                y: {
+                    grid: { color: '#e3e6ea', drawBorder: false },
+                    ticks: { color: '#888', font: { size: 12 } },
+                    min: 0, max: 100
                 }
-            });
-            // Sessions Chart: IPv4, IPv6
-            new Chart(document.getElementById('sessionChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: ["47 seconds ago", "32 seconds ago", "17 seconds ago", "Now"],
-                    datasets: [
-                        {
-                            label: 'IPv4',
-                            data: [1016, 1008, 1012, 1016],
-                            borderColor: '#EC7B4D',
-                            backgroundColor: 'rgba(236,123,77,0.13)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'IPv6',
-                            data: [120, 130, 110, 125],
-                            borderColor: '#50743F',
-                            backgroundColor: 'rgba(80,116,63,0.08)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        }
-                    ]
+            },
+            elements: { line: { borderJoinStyle: 'round' } },
+            layout: { padding: 0 },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    // Sessions Chart: IPv4, IPv6
+    new Chart(document.getElementById('sessionChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ["47 seconds ago", "32 seconds ago", "17 seconds ago", "Now"],
+            datasets: [
+                {
+                    label: 'IPv4',
+                    data: [1016, 1008, 1012, 1016],
+                    borderColor: '#EC7B4D',
+                    backgroundColor: 'rgba(236,123,77,0.13)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 2
                 },
-                options: {
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { enabled: true }
-                    },
-                    scales: {
-                        x: {
-                            grid: { color: '#e3e6ea', drawBorder: false },
-                            ticks: { color: '#888', font: { size: 12 } }
-                        },
-                        y: {
-                            grid: { color: '#e3e6ea', drawBorder: false },
-                            ticks: { color: '#888', font: { size: 12 } },
-                            min: 0
-                        }
-                    },
-                    elements: { line: { borderJoinStyle: 'round' } },
-                    layout: { padding: 0 },
-                    responsive: true,
-                    maintainAspectRatio: false
+                {
+                    label: 'IPv6',
+                    data: [120, 130, 110, 125],
+                    borderColor: '#50743F',
+                    backgroundColor: 'rgba(80,116,63,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 2
                 }
-            });
-        };
-    </script>
+            ]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    grid: { color: '#e3e6ea', drawBorder: false },
+                    ticks: { color: '#888', font: { size: 12 } }
+                },
+                y: {
+                    grid: { color: '#e3e6ea', drawBorder: false },
+                    ticks: { color: '#888', font: { size: 12 } },
+                    min: 0
+                }
+            },
+            elements: { line: { borderJoinStyle: 'round' } },
+            layout: { padding: 0 },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+};
+
+// --- Network Interfaces CRUD Logic ---
+const interfacesSection = document.getElementById('section-interfaces');
+const interfacesTableBody = document.getElementById('interfaces-table-body');
+const editModal = document.getElementById('edit-interface-modal');
+const editForm = document.getElementById('edit-interface-form');
+let currentEditId = null;
+
+console.log('Interfaces section element:', interfacesSection);
+console.log('Interfaces table body element:', interfacesTableBody);
+console.log('Edit modal element:', editModal);
+console.log('Edit form element:', editForm);
+
+// Load interfaces from API
+async function loadInterfaces() {
+  console.log('Loading interfaces...');
+  interfacesTableBody.innerHTML = '<tr><td colspan="8" class="text-center text-gray-400">Loading...</td></tr>';
+  try {
+    const res = await fetch('/api/network/interfaces');
+    console.log('API response status:', res.status);
+    const data = await res.json();
+    console.log('API response data:', data);
+    if (!Array.isArray(data)) throw new Error('Invalid data');
+    interfacesTableBody.innerHTML = '';
+    data.forEach(iface => {
+      console.log('Processing interface:', iface);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="px-3 py-2 border-b">${iface.name}</td>
+        <td class="px-3 py-2 border-b">${iface.alias || ''}</td>
+        <td class="px-3 py-2 border-b">${iface.interface_type}</td>
+        <td class="px-3 py-2 border-b">${iface.role || ''}</td>
+        <td class="px-3 py-2 border-b">${iface.addressing_mode || ''}</td>
+        <td class="px-3 py-2 border-b">${iface.status || ''}</td>
+        <td class="px-3 py-2 border-b">${iface.manual_ip || iface.dhcp_ip || iface.pppoe_ip || ''}</td>
+        <td class="px-3 py-2 border-b"><button class="text-blue-600 hover:underline" onclick="openEditInterfaceModal(${iface.id})">Edit</button></td>
+      `;
+      interfacesTableBody.appendChild(tr);
+    });
+    if (data.length === 0) {
+      interfacesTableBody.innerHTML = '<tr><td colspan="8" class="text-center text-gray-400">No interfaces found.</td></tr>';
+    }
+    console.log('Interfaces loaded successfully');
+  } catch (e) {
+    console.error('Error loading interfaces:', e);
+    interfacesTableBody.innerHTML = '<tr><td colspan="8" class="text-center text-red-500">Failed to load interfaces.</td></tr>';
+  }
+}
+
+// Open edit modal and load data
+async function openEditInterfaceModal(id) {
+  console.log('=== openEditInterfaceModal called ===');
+  console.log('Opening edit modal for interface ID:', id);
+  console.log('Type of id:', typeof id);
+  
+  currentEditId = id;
+  // Reset form
+  editForm.reset();
+  // Hide all addressing fields
+  document.querySelectorAll('.addressing-fields').forEach(f => f.classList.add('hidden'));
+  // Load data
+  try {
+    console.log('Fetching interface data from:', `/api/network/interfaces/${id}`);
+    const res = await fetch(`/api/network/interfaces/${id}`);
+    console.log('Response status:', res.status);
+    console.log('Response headers:', res.headers);
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('API error response:', errorText);
+      throw new Error(`HTTP ${res.status}: ${errorText}`);
+    }
+    
+    const iface = await res.json();
+    console.log('Interface data received:', iface);
+    
+    // Helper to check field existence
+    function checkField(id) {
+      const el = document.getElementById(id);
+      if (!el) {
+        console.error(`Form element '${id}' not found!`);
+        throw new Error(`Form element '${id}' not found!`);
+      }
+      return el;
+    }
+    // Fill form fields with checks
+    checkField('iface-name').value = iface.name;
+    checkField('iface-alias').value = iface.alias || '';
+    checkField('iface-type').value = iface.interface_type;
+    checkField('iface-role').value = iface.role || '';
+    checkField('iface-vrf').value = iface.vrf_id || '';
+    checkField('iface-bandwidth-up').value = iface.bandwidth_up || '';
+    checkField('iface-bandwidth-down').value = iface.bandwidth_down || '';
+    // Addressing mode
+    switchAddressingTab(iface.addressing_mode);
+    // Manual
+    checkField('manual-ip').value = iface.manual_ip || '';
+    checkField('manual-netmask').value = iface.manual_netmask || '';
+    checkField('manual-gateway').value = iface.manual_gateway || '';
+    checkField('manual-dns').value = iface.manual_dns || '';
+    // DHCP
+    checkField('dhcp-ip').value = iface.dhcp_ip || '';
+    checkField('dhcp-dns').value = iface.dhcp_dns || '';
+    checkField('dhcp-gateway').value = iface.dhcp_gateway || '';
+    // PPPoE
+    checkField('pppoe-username').value = iface.pppoe_username || '';
+    checkField('pppoe-password').value = iface.pppoe_password || '';
+    checkField('pppoe-ip').value = iface.pppoe_ip || '';
+    checkField('pppoe-dns').value = iface.pppoe_dns || '';
+    checkField('pppoe-gateway').value = iface.pppoe_gateway || '';
+    // Status radio
+    const enabledRadio = editForm.querySelector('input[name="iface-status"][value="enabled"]');
+    const disabledRadio = editForm.querySelector('input[name="iface-status"][value="disabled"]');
+    if (!enabledRadio || !disabledRadio) {
+      console.error('Status radio buttons not found!');
+      throw new Error('Status radio buttons not found!');
+    }
+    if (iface.status === 'enabled' || iface.status === 'up' || iface.status === 'Connected') {
+      enabledRadio.checked = true;
+    } else {
+      disabledRadio.checked = true;
+    }
+    // Comments
+    checkField('iface-comments').value = iface.description || '';
+    // TODO: Fill other fields (checkboxes, toggles) if backend supports
+    editModal.classList.remove('hidden');
+    console.log('Edit modal opened successfully');
+  } catch (e) {
+    console.error('Error loading interface data:', e);
+    console.error('Error details:', e.message);
+    console.error('Error stack:', e.stack);
+    alert(`Failed to load interface data: ${e.message}`);
+    console.log('ALERT SHOWN FOR ERROR:', e.message);
+  }
+}
+
+function closeEditInterfaceModal() {
+  editModal.classList.add('hidden');
+  currentEditId = null;
+}
+
+// Switch addressing tab
+function switchAddressingTab(mode) {
+  document.querySelectorAll('.addressing-fields').forEach(f => f.classList.add('hidden'));
+  if (mode === 'Manual') {
+    document.getElementById('manual-fields').classList.remove('hidden');
+  } else if (mode === 'DHCP') {
+    document.getElementById('dhcp-fields').classList.remove('hidden');
+  } else if (mode === 'PPPoE') {
+    document.getElementById('pppoe-fields').classList.remove('hidden');
+  }
+}
+
+// Handle form submit (save)
+editForm.onsubmit = async function(e) {
+  e.preventDefault();
+  if (!currentEditId) return;
+  // Gather data
+  const data = {
+    alias: document.getElementById('iface-alias').value,
+    role: document.getElementById('iface-role').value,
+    vrf_id: parseInt(document.getElementById('iface-vrf').value) || null,
+    bandwidth_up: parseInt(document.getElementById('iface-bandwidth-up').value) || null,
+    bandwidth_down: parseInt(document.getElementById('iface-bandwidth-down').value) || null,
+    addressing_mode: document.querySelector('.addressing-tab.bg-green-700')?.dataset.mode || 'Manual',
+    manual_ip: document.getElementById('manual-ip').value,
+    manual_netmask: document.getElementById('manual-netmask').value,
+    manual_gateway: document.getElementById('manual-gateway').value,
+    manual_dns: document.getElementById('manual-dns').value,
+    dhcp_ip: document.getElementById('dhcp-ip').value,
+    dhcp_dns: document.getElementById('dhcp-dns').value,
+    dhcp_gateway: document.getElementById('dhcp-gateway').value,
+    pppoe_username: document.getElementById('pppoe-username').value,
+    pppoe_password: document.getElementById('pppoe-password').value,
+    pppoe_ip: document.getElementById('pppoe-ip').value,
+    pppoe_dns: document.getElementById('pppoe-dns').value,
+    pppoe_gateway: document.getElementById('pppoe-gateway').value,
+    status: editForm.querySelector('input[name="iface-status"]:checked').value,
+    description: document.getElementById('iface-comments').value,
+  };
+  // PATCH: preserve name, type
+  data.name = document.getElementById('iface-name').value;
+  data.interface_type = document.getElementById('iface-type').value;
+  // Send update
+  try {
+    const res = await fetch(`/api/network/interfaces/${currentEditId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Update failed');
+    closeEditInterfaceModal();
+    loadInterfaces();
+  } catch (e) {
+    alert('Failed to update interface.');
+  }
+};
+</script>
 </body>
 </html> 
