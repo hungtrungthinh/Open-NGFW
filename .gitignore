@@ -1,5 +1,70 @@
-# macOS system files
+# Rust/Cargo
+/target/
+Cargo.lock
+
+# Next.js build output
+/frontend/.next/
+/frontend/out/
+
+# Node modules
+/frontend/node_modules/
+
+# Local env files
+.env*
+/frontend/.env*
+
+# Mac system files
 .DS_Store
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+/frontend/*.log
+
+# Test coverage
+coverage/
+
+# Turbo repo
+.turbo/
+
+# Vercel deployment
+.vercel/
+/frontend/.vercel/
+
+# Local next config
+/frontend/next.config.js.local
+
+# Local environment overrides
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+# Editor folders
+.vscode/
+.idea/
+
+# Systemd service files (if they contain sensitive data)
+*.service.local
+
+# Output
+/frontend/out/
+
+# Architecture/secret docs
+DAA/
+DAA/*.arc
+*.arc
+
+# Misc
+*.log
+
+# macOS system files
 .DS_Store?
 ._*
 .Spotlight-V100
@@ -7,28 +72,10 @@
 ehthumbs.db
 Thumbs.db
 
-# Rust build artifacts
-/target/
-**/*.rs.bk
-Cargo.lock
-
 # IDE and editor files
-.vscode/
-.idea/
 *.swp
 *.swo
 *~
-
-# Log files
-*.log
-logs/
-
-# Environment variables and secrets
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 # Configuration files with sensitive data
 config/local.toml
@@ -48,15 +95,6 @@ tmp/
 temp/
 *.tmp
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
 # Backup files
 *.bak
 *.backup
@@ -70,7 +108,6 @@ target/examples/
 docs/_build/
 
 # Coverage reports
-coverage/
 *.profraw
 
 # Package files
@@ -83,42 +120,26 @@ coverage/
 .dockerignore
 docker-compose.override.yml
 
-# Systemd service files (if they contain sensitive data)
-*.service.local
-
 # Ignore architecture documentation files
 *.arc
 
-# Exclude architecture and secret files
-DAA/
-DAA/*.arc 
-
 # dependencies
-/node_modules
 /.pnp
 .pnp.js
 
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
-
 # production
 /build
 
 # misc
-.DS_Store
 *.pem
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# local env files
-.env*.local
 
 # vercel
 .vercel
