@@ -20,7 +20,8 @@ import {
   Zap,
   Globe,
   Lock,
-  Activity
+  Activity,
+  RefreshCw
 } from "lucide-react";
 
 interface ThreatPreventionPolicy {

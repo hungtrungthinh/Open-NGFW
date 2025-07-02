@@ -1,5 +1,9 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Bot, Shield, Activity } from "lucide-react";
+
 export default function BotnetProtectionPage() {
   return (
     <div className="space-y-6">

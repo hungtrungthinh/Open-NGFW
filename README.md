@@ -7,6 +7,7 @@ A modern Next-Generation Firewall application built with Rust, featuring a web-b
 ## Sample Demo Dashboard
 
 ![Dashboard Sample](examples/ds_demo.png)
+![Traffic Monitor](examples/Sample_Traffic_Monitor_ds.1.png)
 
 The dashboard provides a modern, enterprise-grade interface for firewall management with real-time monitoring, rule configuration, and network interface management.
 

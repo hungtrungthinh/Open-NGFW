@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { 
   Box, 
@@ -554,7 +554,7 @@ export default function RoutingObjectsPage() {
               
               <div>
                 <Label htmlFor="type">Object Type</Label>
-                <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value as any})}>
+                <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value as unknown})}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
@@ -615,7 +615,7 @@ export default function RoutingObjectsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="protocol">Protocol</Label>
-                    <Select value={formData.protocol} onValueChange={(value) => setFormData({...formData, protocol: value})}>
+                    <Select value={formData.protocol} onValueChange={(value) => setFormData({...formData, protocol: value as unknown})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select protocol" />
                       </SelectTrigger>
@@ -647,7 +647,7 @@ export default function RoutingObjectsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="schedule_type">Schedule Type</Label>
-                    <Select value={formData.schedule_type} onValueChange={(value) => setFormData({...formData, schedule_type: value as any})}>
+                    <Select value={formData.schedule_type} onValueChange={(value) => setFormData({...formData, schedule_type: value as unknown})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>

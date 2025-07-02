@@ -20,7 +20,8 @@ import {
   AlertTriangle,
   Network,
   Activity,
-  ArrowRight
+  ArrowRight,
+  Shield
 } from "lucide-react";
 
 interface StaticRoute {

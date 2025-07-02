@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Gauge, Edit, Plus, Trash2 } from "lucide-react";
-import ReactSelect, { GroupBase, MultiValue } from 'react-select';
+import ReactSelect, { MultiValue } from 'react-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
@@ -107,7 +107,6 @@ const groupedApplications = [
 
 export default function TrafficShapingL7Page() {
   const [policies, setPolicies] = useState<L7Policy[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editPolicy, setEditPolicy] = useState<L7Policy | null>(null);
   const [formData, setFormData] = useState<Partial<L7Policy>>({});
@@ -141,7 +140,6 @@ export default function TrafficShapingL7Page() {
         enabled: true
       }
     ]);
-    setLoading(false);
   }, []);
 
   const handleAdd = () => {

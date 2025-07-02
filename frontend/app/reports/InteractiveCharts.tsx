@@ -49,66 +49,6 @@ type AnomalyStat = { time: string; value: number };
 
 export default function InteractiveCharts() {
   const [selected, setSelected] = useState<string | undefined>(undefined);
-  const [traffic, setTraffic] = useState<TrafficStat[]>([]);
-  const [trafficLoading, setTrafficLoading] = useState(false);
-  const [trafficError, setTrafficError] = useState("");
-  const [protocol, setProtocol] = useState<ProtocolStat[]>([]);
-  const [protocolLoading, setProtocolLoading] = useState(false);
-  const [protocolError, setProtocolError] = useState("");
-  const [security, setSecurity] = useState<SecurityStat[]>([]);
-  const [securityLoading, setSecurityLoading] = useState(false);
-  const [securityError, setSecurityError] = useState("");
-  const [user, setUser] = useState<UserStat[]>([]);
-  const [userLoading, setUserLoading] = useState(false);
-  const [userError, setUserError] = useState("");
-  const [anomaly, setAnomaly] = useState<AnomalyStat[]>([]);
-  const [anomalyLoading, setAnomalyLoading] = useState(false);
-  const [anomalyError, setAnomalyError] = useState("");
-
-  useEffect(() => {
-    setTrafficLoading(true);
-    fetch("/api/reports/traffic-stats")
-      .then(res => res.json())
-      .then(setTraffic)
-      .catch((err) => setTrafficError("Failed to load traffic data: " + err.message))
-      .finally(() => setTrafficLoading(false));
-  }, []);
-
-  useEffect(() => {
-    setProtocolLoading(true);
-    fetch("/api/reports/application-stats")
-      .then(res => res.json())
-      .then(setProtocol)
-      .catch(() => setProtocolError("Failed to load protocol data"))
-      .finally(() => setProtocolLoading(false));
-  }, []);
-
-  useEffect(() => {
-    setSecurityLoading(true);
-    fetch("/api/reports/security-stats")
-      .then(res => res.json())
-      .then(setSecurity)
-      .catch(() => setSecurityError("Failed to load security data"))
-      .finally(() => setSecurityLoading(false));
-  }, []);
-
-  useEffect(() => {
-    setUserLoading(true);
-    fetch("/api/reports/user-stats")
-      .then(res => res.json())
-      .then(setUser)
-      .catch(() => setUserError("Failed to load user data"))
-      .finally(() => setUserLoading(false));
-  }, []);
-
-  useEffect(() => {
-    setAnomalyLoading(true);
-    fetch("/api/reports/anomaly-stats")
-      .then(res => res.json())
-      .then(setAnomaly)
-      .catch(() => setAnomalyError("Failed to load anomaly data"))
-      .finally(() => setAnomalyLoading(false));
-  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

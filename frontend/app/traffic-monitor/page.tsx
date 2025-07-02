@@ -10,27 +10,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Activity,
   Search,
-  Filter,
   RefreshCw,
-  Eye,
   Download,
-  Clock,
-  Network,
   Globe,
-  Users,
-  ArrowUpRight,
-  ArrowDownRight,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Wifi,
+  Network,
   Server,
-  Database,
   BarChart3,
   TrendingUp,
-  TrendingDown
+  Eye
 } from "lucide-react";
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface Session {
   id: string;

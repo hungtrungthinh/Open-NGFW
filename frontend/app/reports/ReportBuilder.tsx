@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import Select from "react-select";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -21,10 +19,6 @@ const filterOptions = [
 const templateOptions = [
   { value: "traffic", label: "Traffic Template" },
   { value: "security", label: "Security Template" },
-];
-const previewData = [
-  { source_ip: "192.168.1.1", destination_ip: "8.8.8.8", user: "admin", application: "HTTPS", bytes: 12000, time: "2024-07-01" },
-  { source_ip: "192.168.1.2", destination_ip: "1.1.1.1", user: "user1", application: "DNS", bytes: 8000, time: "2024-07-01" },
 ];
 
 type OptionType = { value: string; label: string; group?: string };

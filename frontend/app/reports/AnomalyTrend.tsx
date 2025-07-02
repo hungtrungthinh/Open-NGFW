@@ -1,6 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ResponsiveContainer, LineChart, Line, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
-import { useEffect, useState } from "react";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
 const anomalyData = [
   { time: "14:25", value: 10 },
@@ -17,18 +16,6 @@ const anomalyEvents = [
 type AnomalyEvent = { time: string; type: string; detail: string };
 
 export default function AnomalyTrend() {
-  const [anomaly, setAnomaly] = useState<AnomalyEvent[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  useEffect(() => {
-    setLoading(true);
-    fetch("/api/reports/anomaly")
-      .then(res => res.json())
-      .then(setAnomaly)
-      .catch((err) => setError("Failed to load anomaly data: " + err.message))
-      .finally(() => setLoading(false));
-  }, []);
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card>

@@ -18,7 +18,8 @@ import {
   Download,
   Upload,
   ArrowRight,
-  BarChart3
+  BarChart3,
+  Wifi
 } from "lucide-react";
 import { AreaChart, Area, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 

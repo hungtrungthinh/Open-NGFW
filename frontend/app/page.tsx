@@ -9,27 +9,16 @@ import {
   Shield,
   ShieldCheck,
   ShieldX,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   CheckCircle,
   XCircle,
-  Wifi,
-  Users,
-  Globe,
-  Server,
-  BarChart3,
-  Eye,
-  Clock,
-  Zap,
-  Gauge,
   Network,
   FileText,
-  Bell,
-  Settings,
   ArrowUpRight,
   ArrowDownRight,
-  Minus
+  TrendingUp,
+  Server,
+  Globe
 } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
@@ -89,18 +78,17 @@ interface DashboardStats {
 }
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<DashboardStats>({
-    securityRating: 85,
-    activeConnections: 1247,
-    blockedThreats: 23,
-    allowedConnections: 15420,
-    systemCpu: 45,
-    systemMemory: 62,
-    systemDisk: 28,
-    uptime: "15d 8h 32m"
-  });
-
   const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<DashboardStats>({
+    securityRating: 92,
+    activeConnections: 1240,
+    blockedThreats: 37,
+    allowedConnections: 1203,
+    systemCpu: 32,
+    systemMemory: 68,
+    systemDisk: 54,
+    uptime: "3 days 12:45:22"
+  });
 
   useEffect(() => {
     // Simulate loading

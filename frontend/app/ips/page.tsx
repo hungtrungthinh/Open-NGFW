@@ -17,7 +17,9 @@ import {
   XCircle, 
   Eye,
   Edit,
-  Globe
+  Globe,
+  Zap,
+  Settings
 } from "lucide-react";
 
 interface IPSSignature {

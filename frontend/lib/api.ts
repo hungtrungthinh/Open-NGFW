@@ -186,8 +186,8 @@ class ApiClient {
   }
 
   // Dashboard Status
-  async getDashboardStatus(): Promise<any> {
-    return this.request<any>('/dashboard/status');
+  async getDashboardStatus(): Promise<unknown> {
+    return this.request<unknown>('/dashboard/status');
   }
 }
 

@@ -17,17 +17,11 @@ const tenantOptions = [
   { value: "branch1", label: "Branch 1" },
   { value: "branch2", label: "Branch 2" },
 ];
-const accessList = [
-  { user: "admin", group: "admins", tenant: "hq" },
-  { user: "user1", group: "users", tenant: "branch1" },
-];
 
 type OptionType = { value: string; label: string };
 type AccessRow = { user: string; group: string; tenant: string };
 
 export default function AccessControl() {
-  const [users, setUsers] = useState<OptionType[]>([]);
-  const [groups, setGroups] = useState<OptionType[]>([]);
   const [tenant, setTenant] = useState<OptionType>(tenantOptions[0]);
   const [access, setAccess] = useState<AccessRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,14 +40,6 @@ export default function AccessControl() {
     <Card>
       <CardHeader><CardTitle>Report Access Control</CardTitle></CardHeader>
       <CardContent>
-        <div className="mb-4">
-          <label className="block font-medium mb-1">Users</label>
-          <Select isMulti options={userOptions} onChange={v => setUsers(v as OptionType[])} className="mb-2" placeholder="Select users..." />
-        </div>
-        <div className="mb-4">
-          <label className="block font-medium mb-1">Groups</label>
-          <Select isMulti options={groupOptions} onChange={v => setGroups(v as OptionType[])} className="mb-2" placeholder="Select groups..." />
-        </div>
         <div className="mb-4">
           <label className="block font-medium mb-1">Tenant/Site/Branch</label>
           <select value={tenant.value} onChange={e => setTenant(tenantOptions.find(t => t.value === e.target.value)!)} className="border rounded px-2 py-1">
