@@ -17,19 +17,10 @@ import {
   Search,
   Download,
   Upload,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  Clock,
-  Wifi,
-  Server,
   ArrowRight,
-  Settings,
-  RefreshCw,
-  Eye,
   BarChart3
 } from "lucide-react";
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 
 interface NATRule {
   id: string;
@@ -407,8 +398,6 @@ export default function NAT() {
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={natStatsData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis />
               <Tooltip />
               <Area 
                 type="monotone" 

@@ -17,9 +17,9 @@ const mockL3Rules = [
 ];
 
 export default function TrafficShapingL3Page() {
-  const [l3Rules, setL3Rules] = useState<any[]>(mockL3Rules);
+  const [l3Rules, setL3Rules] = useState<Layer3Rule[]>(mockL3Rules);
   const [isL3DialogOpen, setIsL3DialogOpen] = useState(false);
-  const [editL3Rule, setEditL3Rule] = useState<any>(null);
+  const [editL3Rule, setEditL3Rule] = useState<Layer3Rule | null>(null);
   const [l3Form, setL3Form] = useState({ policy: "Allow", protocol: "Any", destination: "", port: "", comment: "" });
 
   const handleAddL3 = () => {
@@ -27,12 +27,12 @@ export default function TrafficShapingL3Page() {
     setL3Form({ policy: "Allow", protocol: "Any", destination: "", port: "", comment: "" });
     setIsL3DialogOpen(true);
   };
-  const handleEditL3 = (rule: any) => {
+  const handleEditL3 = (rule: Layer3Rule) => {
     setEditL3Rule(rule);
     setL3Form(rule);
     setIsL3DialogOpen(true);
   };
-  const handleDeleteL3 = (id: any) => {
+  const handleDeleteL3 = (id: string) => {
     setL3Rules(l3Rules.filter(r => r.id !== id));
   };
   const handleSaveL3 = () => {

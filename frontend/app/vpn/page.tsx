@@ -18,12 +18,12 @@ const mockVPNs = [
 ];
 
 export default function VPNPage() {
-  const [vpns, setVPNs] = useState<any[]>(mockVPNs);
+  const [vpns, setVPNs] = useState<VPN[]>(mockVPNs);
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editVPN, setEditVPN] = useState<any>(null);
+  const [editVPN, setEditVPN] = useState<VPN | null>(null);
   const [vpnForm, setVPNForm] = useState({ name: "", type: "IPSec", remote: "", psk: "", status: true });
-  const [deleteId, setDeleteId] = useState(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState("");
 
   const handleAdd = () => {
@@ -31,12 +31,12 @@ export default function VPNPage() {
     setVPNForm({ name: "", type: "IPSec", remote: "", psk: "", status: true });
     setIsDialogOpen(true);
   };
-  const handleEdit = (vpn: any) => {
+  const handleEdit = (vpn: VPN) => {
     setEditVPN(vpn);
     setVPNForm({ name: vpn.name, type: vpn.type, remote: vpn.remote, psk: vpn.psk, status: vpn.status });
     setIsDialogOpen(true);
   };
-  const handleDelete = (id: any) => {
+  const handleDelete = (id: string) => {
     setDeleteId(id);
     setLoading(true);
     setTimeout(() => {

@@ -21,7 +21,6 @@ import {
   XCircle, 
   AlertTriangle,
   Activity,
-  Shield,
   Globe,
   Lock,
   Eye,

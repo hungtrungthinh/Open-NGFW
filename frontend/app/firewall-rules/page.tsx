@@ -15,19 +15,11 @@ import {
   Edit,
   Trash2,
   Search,
-  Filter,
   Download,
   Upload,
-  Eye,
-  EyeOff,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
   Clock,
-  Network,
-  Globe,
-  Users,
-  Settings
+  CheckCircle,
+  XCircle
 } from "lucide-react";
 
 interface FirewallRule {

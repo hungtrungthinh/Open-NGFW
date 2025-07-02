@@ -11,22 +11,12 @@ import {
   Bug, 
   Shield, 
   FileText, 
-  Settings, 
   RefreshCw, 
   AlertTriangle, 
   CheckCircle, 
   XCircle, 
-  Activity, 
-  TrendingUp, 
   Eye,
-  Download,
-  Upload,
-  Plus,
   Edit,
-  Trash2,
-  Play,
-  Pause,
-  Zap,
   Globe
 } from "lucide-react";
 

@@ -21,20 +21,9 @@ import {
   Network,
   Globe,
   Shield,
-  Settings,
-  Activity,
-  ArrowRight,
-  MapPin,
-  Users,
   Clock,
-  Target,
-  Wifi,
-  Signal,
-  Zap,
   BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Tag
+  TrendingUp
 } from "lucide-react";
 
 interface SDWANInterface {

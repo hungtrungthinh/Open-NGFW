@@ -6,21 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   ShieldX, 
   Plus, 
   Edit, 
-  Trash2, 
   Search, 
-  Filter, 
-  RefreshCw, 
   AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
   Eye,
-  Settings,
   FileText,
   Bug,
   Shield,
@@ -497,9 +490,6 @@ export default function ThreatPreventionPage() {
                         </Button>
                         <Button variant="outline" size="sm">
                           <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Settings className="w-4 h-4" />
                         </Button>
                       </div>
                     </td>
