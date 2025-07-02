@@ -631,4 +631,28 @@ impl FirewallRule {
             updated_at: now,
         }
     }
+}
+
+// ============================================================================
+// NAT MODELS
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NatRule {
+    pub id: String,
+    pub original_ip: String,
+    pub translated_ip: String,
+    pub nat_type: NatType, // SNAT or DNAT
+    pub original_port: Option<u16>,
+    pub translated_port: Option<u16>,
+    pub enabled: bool,
+    pub comment: Option<String>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum NatType {
+    SNAT,
+    DNAT,
 } 

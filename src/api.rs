@@ -9,7 +9,7 @@ use tokio::sync::RwLock;
 use crate::firewall::Firewall;
 use crate::network::NetworkManager;
 use crate::logging::{LogManager, Filter, LogType, LogMetadata};
-use crate::models::{FirewallRule, CreateRuleRequest, FirewallStatus, FirewallStatistics, DashboardStatus, SecurityTopology, NetworkInterface, StaticRoute, FirewallPolicy, AntivirusProfile, Administrator, TrafficLog, RoutingMonitor, WifiSsid, RuleAction, Protocol, Direction, LogEntry};
+use crate::models::{FirewallRule, CreateRuleRequest, FirewallStatus, FirewallStatistics, DashboardStatus, SecurityTopology, NetworkInterface, StaticRoute, FirewallPolicy, AntivirusProfile, Administrator, TrafficLog, RoutingMonitor, WifiSsid, RuleAction, Protocol, Direction, LogEntry, NatRule, NatType};
 use crate::firewall_db::{open_default_db};
 use chrono::{DateTime, Utc};
 use crate::network_db::{open_default_network_db};
@@ -22,6 +22,8 @@ use axum::middleware::Next;
 use axum::http::Request;
 use axum::response::Response;
 use axum::response::IntoResponse;
+use std::fs;
+use std::path::Path;
 
 // Type alias for the application state
 pub type AppState = (Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>, Arc<LogManager>);
@@ -1446,4 +1448,64 @@ pub async fn export_compliance_report_real(
         .body(Body::from(content.as_ref()))
         .unwrap();
     Ok((StatusCode::OK, resp))
+}
+
+// --- NAT API ---
+const NAT_RULES_PATH: &str = "data/nat_rules.json";
+
+/// List all NAT rules
+#[axum::debug_handler]
+pub async fn get_nat_rules() -> Json<Vec<NatRule>> {
+    let rules = read_nat_rules_from_file();
+    Json(rules)
+}
+
+/// Add a new NAT rule
+#[axum::debug_handler]
+pub async fn add_nat_rule(Json(new_rule): Json<NatRule>) -> (StatusCode, Json<NatRule>) {
+    let mut rules = read_nat_rules_from_file();
+    rules.push(new_rule.clone());
+    write_nat_rules_to_file(&rules);
+    (StatusCode::CREATED, Json(new_rule))
+}
+
+/// Update a NAT rule by id
+#[axum::debug_handler]
+pub async fn update_nat_rule(Path(id): Path<String>, Json(updated_rule): Json<NatRule>) -> (StatusCode, Json<NatRule>) {
+    let mut rules = read_nat_rules_from_file();
+    if let Some(pos) = rules.iter().position(|r| r.id == id) {
+        rules[pos] = updated_rule.clone();
+        write_nat_rules_to_file(&rules);
+        (StatusCode::OK, Json(updated_rule))
+    } else {
+        (StatusCode::NOT_FOUND, Json(updated_rule))
+    }
+}
+
+/// Delete a NAT rule by id
+#[axum::debug_handler]
+pub async fn delete_nat_rule(Path(id): Path<String>) -> (StatusCode, Json<serde_json::Value>) {
+    let mut rules = read_nat_rules_from_file();
+    let len_before = rules.len();
+    rules.retain(|r| r.id != id);
+    if rules.len() < len_before {
+        write_nat_rules_to_file(&rules);
+        (StatusCode::OK, Json(json!({"deleted": true})))
+    } else {
+        (StatusCode::NOT_FOUND, Json(json!({"deleted": false})))
+    }
+}
+
+fn read_nat_rules_from_file() -> Vec<NatRule> {
+    if Path::new(NAT_RULES_PATH).exists() {
+        let data = fs::read_to_string(NAT_RULES_PATH).unwrap_or_default();
+        serde_json::from_str(&data).unwrap_or_default()
+    } else {
+        Vec::new()
+    }
+}
+
+fn write_nat_rules_to_file(rules: &Vec<NatRule>) {
+    let _ = fs::create_dir_all("data");
+    let _ = fs::write(NAT_RULES_PATH, serde_json::to_string_pretty(rules).unwrap());
 } 

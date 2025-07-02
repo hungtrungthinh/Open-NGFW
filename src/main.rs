@@ -219,6 +219,11 @@ async fn main() {
         .route("/api/reports/access", get(api::get_access_list))
         .route("/api/reports/access", post(api::update_access))
         .route("/api/reports/auditlog", get(api::get_audit_log))
+        // NAT API
+        .route("/api/nat", get(api::get_nat_rules))
+        .route("/api/nat", post(api::add_nat_rule))
+        .route("/api/nat/:id", put(api::update_nat_rule))
+        .route("/api/nat/:id", delete(api::delete_nat_rule))
         .nest_service("/static", ServeDir::new("static"))
         .layer(cors)
         .with_state((firewall, network_manager, log_manager));
