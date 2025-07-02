@@ -15,6 +15,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/traffic-monitor/page.js"
+    ],
+    "/network/interfaces/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/network/interfaces/page.js"
     ]
   }
 }
