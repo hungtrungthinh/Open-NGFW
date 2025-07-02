@@ -6,6 +6,12 @@ node_modules/
 
 # Local env files
 .env*
+.envrc
+.env.*
+.local
+.local.*
+.test
+.test.*
 
 # Mac system files
 .DS_Store
@@ -14,9 +20,13 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log
+*.log
 
 # Test coverage
 coverage/
+.nyc_output/
+.coverage*
 
 # Turbo repo
 .turbo/
@@ -27,18 +37,59 @@ coverage/
 # Local next config
 next.config.js.local
 
-# Local environment overrides
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
 # Editor folders
 .vscode/
 .idea/
 
 # Output
 out/
+dist/
+build/
 
 # Misc
 *.log 
+.cache/
+.cache-loader/
+.svelte-kit/
+.parcel-cache/
+.storybook/
+.cypress/
+.playwright/
+.vscode-test/
+.tmp/
+tmp/
+
+# Static build artifacts
+public/static/
+static/
+
+# SWC/Next.js internals
+swc.lock
+next-swc.*
+@next/
+.next-swc/
+
+# Certificates/keys (security)
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*.keystore
+*.pfx
+
+# Config/CI/CD/DevOps
+.editorconfig
+.browserslistrc
+.gitmodules
+.gitlab-ci.yml
+.github/
+.husky/
+.lintstagedrc
+.prettier*
+.stylelintrc*
+.dockerignore
+Dockerfile*
+docker-compose*
+
+# END 
