@@ -16,6 +16,12 @@ use crate::network_db::{open_default_network_db};
 use crate::models::{AddressingMode};
 use crate::network::get_physical_ports;
 use serde::Deserialize;
+use std::collections::HashMap;
+use axum::body::Body;
+use axum::middleware::Next;
+use axum::http::Request;
+use axum::response::Response;
+use axum::response::IntoResponse;
 
 // Type alias for the application state
 pub type AppState = (Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>, Arc<LogManager>);
@@ -1232,4 +1238,212 @@ pub async fn get_logs(
             Err((StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))))
         }
     }
+}
+
+#[derive(Deserialize)]
+pub struct CustomReportRequest {
+    pub fields: Vec<String>,
+    pub filters: Vec<FilterCondition>,
+}
+
+#[derive(Deserialize)]
+pub struct FilterCondition {
+    pub field: String,
+    pub op: String,
+    pub value: String,
+}
+
+#[derive(Deserialize)]
+pub struct ExportReportRequest {
+    pub fields: Vec<String>,
+    pub filters: Vec<FilterCondition>,
+    pub format: String,
+}
+
+#[derive(Deserialize)]
+pub struct ExportComplianceRequest {
+    pub type_: String,
+}
+
+#[axum::debug_handler]
+pub async fn get_traffic_stats() -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(vec![
+        json!({ "time": "14:25", "incoming": 1200, "outgoing": 800, "connections": 45 }),
+    ]))
+}
+
+#[axum::debug_handler]
+pub async fn get_application_stats() -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(vec![
+        json!({ "protocol": "HTTPS", "connections": 25, "bytes": 15420 }),
+    ]))
+}
+
+#[axum::debug_handler]
+pub async fn get_security_stats() -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(vec![
+        json!({ "name": "IPS", "value": 12 }),
+    ]))
+}
+
+#[axum::debug_handler]
+pub async fn get_user_stats() -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(vec![
+        json!({ "user": "admin", "bandwidth": 12000 }),
+    ]))
+}
+
+#[axum::debug_handler]
+pub async fn get_anomaly_stats() -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(vec![
+        json!({ "time": "14:28", "value": 30 }),
+    ]))
+}
+
+#[axum::debug_handler]
+pub async fn custom_report_preview(
+    axum::Json(req): axum::Json<CustomReportRequest>
+) -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    if req.fields.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, axum::Json(json!({"error": "Fields required"}))));
+    }
+    Ok(axum::Json(vec![
+        json!({ "source_ip": "192.168.1.1", "user": "admin" }),
+    ]))
+}
+
+#[axum::debug_handler]
+pub async fn export_report(
+    axum::Json(req): axum::Json<ExportReportRequest>
+) -> Result<(StatusCode, Response), (StatusCode, axum::Json<serde_json::Value>)> {
+    if req.fields.is_empty() || req.format.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, axum::Json(json!({"error": "Fields and format required"}))));
+    }
+    Ok((StatusCode::OK, Response::new(Body::from("Exported file content"))))
+}
+
+#[axum::debug_handler]
+pub async fn get_compliance_mapping(Query(params): Query<HashMap<String, String>>) -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    let _compliance_type = params.get("type").cloned().unwrap_or_else(|| "PCI-DSS".to_string());
+    Ok(axum::Json(vec![
+        json!({ "compliance": "User ID", "system": "user", "note": "Maps to system user field" }),
+    ]))
+}
+
+#[axum::debug_handler]
+pub async fn export_compliance_report(
+    axum::Json(_req): axum::Json<ExportComplianceRequest>
+) -> Result<(StatusCode, Response), (StatusCode, axum::Json<serde_json::Value>)> {
+    let content = b"Fake PDF/CSV/XLSX content";
+    let resp = Response::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "application/pdf")
+        .header("Content-Disposition", "attachment; filename=report.pdf")
+        .body(Body::from(content.as_ref()))
+        .unwrap();
+    Ok((StatusCode::OK, resp))
+}
+
+#[axum::debug_handler]
+pub async fn get_schedules() -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(vec![
+        json!({ "id": "1", "name": "PCI-DSS Compliance", "type": "Compliance", "schedule": "Monthly", "recipients": "admin@corp.com", "nextRun": "2024-08-01", "status": true }),
+    ]))
+}
+
+#[axum::debug_handler]
+pub async fn create_or_update_schedule(axum::Json(_req): axum::Json<serde_json::Value>) -> Result<axum::Json<serde_json::Value>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(json!({"message": "Schedule saved"})))
+}
+
+#[axum::debug_handler]
+pub async fn delete_schedule(Path(id): Path<String>) -> Result<axum::Json<serde_json::Value>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(json!({"message": format!("Schedule {} deleted", id)})))
+}
+
+#[axum::debug_handler]
+pub async fn get_access_list() -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(vec![
+        json!({ "user": "admin", "group": "admins", "tenant": "hq" }),
+    ]))
+}
+
+#[axum::debug_handler]
+pub async fn update_access(axum::Json(_req): axum::Json<serde_json::Value>) -> Result<axum::Json<serde_json::Value>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(json!({"message": "Access updated"})))
+}
+
+#[axum::debug_handler]
+pub async fn get_audit_log(Query(_params): Query<HashMap<String, String>>) -> Result<axum::Json<Vec<serde_json::Value>>, (StatusCode, axum::Json<serde_json::Value>)> {
+    Ok(axum::Json(vec![
+        json!({ "user": "admin", "action": "Exported", "time": "2024-07-01 08:01", "report": "Weekly Traffic" }),
+    ]))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::http::{Request, StatusCode};
+    use axum::body::Body;
+    use axum::response::Response;
+    use axum::{Router, routing::{get, post, delete}};
+    use tower::ServiceExt; // for .oneshot
+
+    #[tokio::test]
+    async fn test_get_traffic_stats() {
+        let response = get_traffic_stats().await.unwrap();
+        let data = response.0;
+        assert!(!data.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_custom_report_preview_empty_fields() {
+        let req = CustomReportRequest { fields: vec![], filters: vec![] };
+        let result = custom_report_preview(axum::Json(req)).await;
+        assert!(result.is_err());
+        let (status, _) = result.err().unwrap();
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_router_traffic_stats() {
+        let app = Router::new().route("/api/reports/traffic-stats", get(get_traffic_stats));
+        let req = Request::builder().uri("/api/reports/traffic-stats").body(Body::empty()).unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
+}
+
+// RBAC middleware (mock, có thể mở rộng với JWT/session)
+pub async fn require_admin(
+    req: Request<Body>,
+    next: Next,
+) -> impl IntoResponse {
+    let is_admin = true; // Thay bằng kiểm tra thực tế
+    if !is_admin {
+        return (StatusCode::FORBIDDEN, "Forbidden").into_response();
+    }
+    next.run(req).await
+}
+
+// Audit log mẫu (có thể ghi vào DB/log file)
+pub fn log_audit(user: &str, action: &str, detail: &str) {
+    tracing::info!(target: "AUDIT", user, action, detail);
+    // TODO: Ghi vào DB/log file nếu cần
+}
+
+// Export compliance thực tế (mock trả về PDF/CSV/XLSX bytes)
+use axum::response::{Response as AxumResponse};
+
+pub async fn export_compliance_report_real(
+    axum::Json(_req): axum::Json<ExportComplianceRequest>
+) -> Result<(StatusCode, AxumResponse), (StatusCode, axum::Json<serde_json::Value>)> {
+    let content = b"Fake PDF/CSV/XLSX content";
+    let resp = AxumResponse::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "application/pdf")
+        .header("Content-Disposition", "attachment; filename=report.pdf")
+        .body(Body::from(content.as_ref()))
+        .unwrap();
+    Ok((StatusCode::OK, resp))
 } 

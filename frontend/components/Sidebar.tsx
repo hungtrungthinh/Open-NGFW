@@ -1,276 +1,422 @@
-'use client';
+"use client";
 
-import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 import {
-  Gauge,
-  ShieldHalf,
-  Network,
+  LayoutDashboard,
+  Activity,
   Shield,
-  ShieldCheck,
-  Lock,
-  Cog,
+  Network,
+  Monitor,
   FileText,
-  MonitorSmartphone,
-  Wifi,
-  Layers,
   Users,
-  Info,
-  Server,
-  GitBranch,
-  Bot,
-  Plug,
+  Lock,
   Globe,
-  Signal,
-  Route,
-  Shuffle,
-  Box,
-  SlidersHorizontal,
-  Contact,
-  ConciergeBell,
-  Calendar,
   Bug,
-  Filter,
-  ShieldAlert,
-  AppWindow,
-  Link,
-  DoorOpen,
-  Award,
-  TrafficCone,
-  BarChart,
-  FileText as FileTextIcon,
+  Zap,
+  Gauge,
+  Server,
+  Settings,
+  BarChart3,
+  Bell,
+  Wifi,
+  Tag,
+  MapPin,
+  Clock,
+  Database,
+  Eye,
+  ShieldCheck,
+  Router,
+  Cable,
+  Globe2,
+  ShieldX,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  ChevronDown,
+  ChevronRight,
+  Route,
+  Layers,
+  Signal,
+  Box,
+  Shuffle,
   Factory
 } from "lucide-react";
 
-const icons = {
-  dashboard: <Gauge size={18} />, // Dashboard
-  status: <Info size={16} />, // Status
-  security: <ShieldCheck size={16} />, // Security
-  network: <Network size={16} />, // Network
-  users_devices: <Users size={16} />, // Users & Devices
-  system: <Cog size={16} />, // System
-  ot_dashboard: <Factory size={16} />, // OT Dashboard
-  security_entry: <ShieldHalf size={18} />, // Security Entry
-  entry_topology: <GitBranch size={16} />,
-  entry_physical: <Server size={16} />,
-  entry_logical: <Layers size={16} />,
-  entry_automation: <Bot size={16} />,
-  entry_connectors: <Plug size={16} />,
-  network_main: <Network size={18} />,
-  interfaces: <Network size={16} />,
-  static_routes: <Route size={16} />,
-  policy_routes: <Shuffle size={16} />,
-  routing_objects: <Box size={16} />,
-  sdwan: <Network size={16} />,
-  dns: <Globe size={16} />,
-  extender: <Signal size={16} />,
-  policy: <Shield size={18} />,
-  firewall_policy: <ShieldHalf size={16} />,
-  virtual_ips: <Network size={16} />,
-  traffic_shaping: <SlidersHorizontal size={16} />,
-  addresses: <Contact size={16} />,
-  services: <ConciergeBell size={16} />,
-  schedules: <Calendar size={16} />,
-  profiles: <ShieldCheck size={18} />,
-  antivirus: <Bug size={16} />,
-  web_filter: <Filter size={16} />,
-  dns_filter: <Globe size={16} />,
-  ips: <ShieldAlert size={16} />,
-  app_control: <AppWindow size={16} />,
-  dlp: <Lock size={16} />,
-  vpn: <Lock size={18} />,
-  ipsec_tunnels: <Link size={16} />,
-  ssl_vpn_settings: <Cog size={16} />,
-  ssl_vpn_portals: <DoorOpen size={16} />,
-  system_main: <Cog size={18} />,
-  administrators: <ShieldCheck size={16} />,
-  guard: <Shield size={16} />,
-  certificates: <Award size={16} />,
-  settings: <SlidersHorizontal size={16} />,
-  ha: <Layers size={16} />,
-  log: <FileText size={18} />,
-  local_traffic_log: <TrafficCone size={16} />,
-  analyzer: <BarChart size={16} />,
-  reports: <FileTextIcon size={16} />,
-  monitor: <MonitorSmartphone size={18} />,
-  routing_monitor: <Route size={16} />,
-  vpn_monitor: <Lock size={16} />,
-  sdwan_monitor: <Network size={16} />,
-  wifi_monitor: <Wifi size={16} />,
-  wifi_switch: <Wifi size={18} />,
-  wifi_ssids: <Wifi size={16} />,
-};
-
-const menuData = [
+const menuItems = [
   {
-    key: "dashboard",
-    label: "Dashboard",
-    icon: icons.dashboard,
-    submenu: [
-      { key: "status", label: "Status", icon: icons.status },
-      { key: "security", label: "Security", icon: icons.security },
-      { key: "network", label: "Network", icon: icons.network },
-      { key: "users_devices", label: "Users & Devices", icon: icons.users_devices },
-      { key: "system", label: "System", icon: icons.system },
-      { key: "ot_dashboard", label: "OT Dashboard", icon: icons.ot_dashboard },
-    ],
+    title: "Dashboard",
+    href: "/",
+    icon: LayoutDashboard,
+    badge: null,
+    submenu: null
   },
   {
-    key: "security_entry",
-    label: "Security Entry",
-    icon: icons.security_entry,
-    submenu: [
-      { key: "entry_topology", label: "Topology", icon: icons.entry_topology },
-      { key: "entry_physical", label: "Physical Topology", icon: icons.entry_physical },
-      { key: "entry_logical", label: "Logical Topology", icon: icons.entry_logical },
-      { key: "entry_automation", label: "Automation", icon: icons.entry_automation },
-      { key: "entry_connectors", label: "Entry Connectors", icon: icons.entry_connectors },
-    ],
+    title: "Traffic Monitor",
+    href: "/traffic-monitor",
+    icon: Activity,
+    badge: null,
+    submenu: null
   },
   {
-    key: "network_main",
-    label: "Network",
-    icon: icons.network_main,
-    submenu: [
-      { key: "interfaces", label: "Interfaces", icon: icons.interfaces, href: "/network_interfaces.html" },
-      { key: "static_routes", label: "Static Routes", icon: icons.static_routes },
-      { key: "policy_routes", label: "Policy Routes", icon: icons.policy_routes },
-      { key: "routing_objects", label: "Routing Objects", icon: icons.routing_objects },
-      { key: "sdwan", label: "SD-WAN", icon: icons.sdwan },
-      { key: "dns", label: "DNS", icon: icons.dns },
-      { key: "extender", label: "Extender", icon: icons.extender },
-    ],
+    title: "Firewall Rules",
+    href: "/firewall-rules",
+    icon: Shield,
+    badge: null,
+    submenu: null
   },
   {
-    key: "policy",
-    label: "Policy & Objects",
-    icon: icons.policy,
+    title: "Network",
+    href: "/network",
+    icon: Network,
+    badge: null,
     submenu: [
-      { key: "firewall_policy", label: "Firewall Policy", icon: icons.firewall_policy },
-      { key: "virtual_ips", label: "Virtual IPs", icon: icons.virtual_ips },
-      { key: "traffic_shaping", label: "Traffic Shaping", icon: icons.traffic_shaping },
-      { key: "addresses", label: "Addresses", icon: icons.addresses },
-      { key: "services", label: "Services", icon: icons.services },
-      { key: "schedules", label: "Schedules", icon: icons.schedules },
-    ],
+      {
+        title: "Interfaces",
+        href: "/network/interfaces",
+        icon: Wifi,
+        description: "Physical and virtual network interfaces"
+      },
+      {
+        title: "Static Routes",
+        href: "/network/static-routes",
+        icon: Route,
+        description: "Configure static routing tables"
+      },
+      {
+        title: "Policy Routes",
+        href: "/network/policy-routes",
+        icon: Shuffle,
+        description: "Policy-based routing configuration"
+      },
+      {
+        title: "Routing Objects",
+        href: "/network/routing-objects",
+        icon: Box,
+        description: "Routing objects and address groups"
+      },
+      {
+        title: "SD-WAN",
+        href: "/network/sdwan",
+        icon: Network,
+        description: "Software-defined WAN configuration"
+      },
+      {
+        title: "DNS",
+        href: "/network/dns",
+        icon: Globe2,
+        description: "DNS server and resolver settings"
+      },
+      {
+        title: "Extender",
+        href: "/network/extender",
+        icon: Signal,
+        description: "Network extender configuration"
+      }
+    ]
   },
   {
-    key: "profiles",
-    label: "Security Profiles",
-    icon: icons.profiles,
+    title: "IPS",
+    href: "/ips",
+    icon: ShieldCheck,
+    badge: null,
     submenu: [
-      { key: "antivirus", label: "Antivirus", icon: icons.antivirus },
-      { key: "web_filter", label: "Web Filter", icon: icons.web_filter },
-      { key: "dns_filter", label: "DNS Filter", icon: icons.dns_filter },
-      { key: "ips", label: "Intrusion Prevention (IPS)", icon: icons.ips },
-      { key: "app_control", label: "Application Control", icon: icons.app_control },
-      { key: "dlp", label: "Data Loss Prevention (DLP)", icon: icons.dlp },
-    ],
+      {
+        title: "Signatures",
+        href: "/ips/signatures",
+        icon: ShieldCheck,
+        description: "Manage IPS signatures and rules"
+      },
+      {
+        title: "Threat Prevention",
+        href: "/ips/threat-prevention",
+        icon: ShieldX,
+        description: "Configure threat prevention policies"
+      },
+      {
+        title: "Vulnerability Protection",
+        href: "/ips/vulnerability-protection",
+        icon: Bug,
+        description: "Vulnerability scanning and protection"
+      },
+      {
+        title: "Malware Protection",
+        href: "/ips/malware-protection",
+        icon: Bug,
+        description: "Malware detection and prevention"
+      },
+      {
+        title: "Botnet Protection",
+        href: "/ips/botnet-protection",
+        icon: Shield,
+        description: "Botnet detection and blocking"
+      },
+      {
+        title: "IPS Logs",
+        href: "/ips/logs",
+        icon: FileText,
+        description: "View IPS detection logs and alerts"
+      },
+      {
+        title: "IPS Settings",
+        href: "/ips/settings",
+        icon: Settings,
+        description: "Configure IPS engine settings"
+      }
+    ]
   },
   {
-    key: "vpn",
-    label: "VPN",
-    icon: icons.vpn,
-    submenu: [
-      { key: "ipsec_tunnels", label: "IPsec Tunnels", icon: icons.ipsec_tunnels },
-      { key: "ssl_vpn_settings", label: "SSL-VPN Settings", icon: icons.ssl_vpn_settings },
-      { key: "ssl_vpn_portals", label: "SSL-VPN Portals", icon: icons.ssl_vpn_portals },
-    ],
+    title: "Logs",
+    href: "/logs",
+    icon: FileText,
+    badge: null,
+    submenu: null
   },
   {
-    key: "system_main",
-    label: "System",
-    icon: icons.system_main,
-    submenu: [
-      { key: "administrators", label: "Administrators", icon: icons.administrators },
-      { key: "guard", label: "Guard", icon: icons.guard },
-      { key: "certificates", label: "Certificates", icon: icons.certificates },
-      { key: "settings", label: "Settings", icon: icons.settings },
-      { key: "ha", label: "High Availability (HA)", icon: icons.ha },
-    ],
+    title: "User Management",
+    href: "/user-management",
+    icon: Users,
+    badge: null,
+    submenu: null
   },
   {
-    key: "log",
-    label: "Log & Report",
-    icon: icons.log,
-    submenu: [
-      { key: "local_traffic_log", label: "Local Traffic Log", icon: icons.local_traffic_log, href: "/logs.html" },
-      { key: "analyzer", label: "Analyzer", icon: icons.analyzer, href: "/analyzer.html" },
-      { key: "reports", label: "Reports", icon: icons.reports, href: "/reports.html" },
-    ],
+    title: "VPN",
+    href: "/vpn",
+    icon: Lock,
+    badge: null,
+    submenu: null
   },
   {
-    key: "monitor",
-    label: "Monitor",
-    icon: icons.monitor,
-    submenu: [
-      { key: "routing_monitor", label: "Routing Monitor", icon: icons.routing_monitor },
-      { key: "vpn_monitor", label: "VPN Monitor", icon: icons.vpn_monitor },
-      { key: "sdwan_monitor", label: "SD-WAN Monitor", icon: icons.sdwan_monitor },
-      { key: "wifi_monitor", label: "Wi-Fi Monitor", icon: icons.wifi_monitor },
-    ],
+    title: "Web Filter",
+    href: "/web-filter",
+    icon: Globe,
+    badge: null,
+    submenu: null
   },
   {
-    key: "wifi_switch",
-    label: "Wi-Fi & Switch Controller",
-    icon: icons.wifi_switch,
-    submenu: [
-      { key: "wifi_ssids", label: "Wi-Fi SSIDs", icon: icons.wifi_ssids },
-    ],
+    title: "Antivirus",
+    href: "/antivirus",
+    icon: Bug,
+    badge: null,
+    submenu: null
   },
+  {
+    title: "DoS Protection",
+    href: "/dos-protection",
+    icon: Zap,
+    badge: null,
+    submenu: null
+  },
+  {
+    title: "Traffic Shaping",
+    href: "/traffic-shaping",
+    icon: Gauge,
+    badge: null,
+    submenu: [
+      {
+        title: "Layer 3 Rules",
+        href: "/traffic-shaping/layer3",
+        icon: Gauge,
+        description: "IP/Port/Protocol-based QoS policies"
+      },
+      {
+        title: "Layer 7 Rules",
+        href: "/traffic-shaping/layer7",
+        icon: Gauge,
+        description: "Application/User/Protocol-based QoS policies"
+      }
+    ]
+  },
+  {
+    title: "High Availability",
+    href: "/high-availability",
+    icon: Server,
+    badge: null,
+    submenu: null
+  },
+  {
+    title: "Central Management",
+    href: "/central-management",
+    icon: Settings,
+    badge: null,
+    submenu: null
+  },
+  {
+    title: "Reports",
+    href: "/reports",
+    icon: BarChart3,
+    badge: null,
+    submenu: null
+  },
+  {
+    title: "Alerts",
+    href: "/alerts",
+    icon: Bell,
+    badge: null,
+    submenu: null
+  },
+  {
+    title: "VLAN",
+    href: "/vlan",
+    icon: Tag,
+    badge: null,
+    submenu: null
+  },
+  {
+    title: "Zones",
+    href: "/zones",
+    icon: MapPin,
+    badge: null,
+    submenu: null
+  },
+  {
+    title: "Policy Schedule",
+    href: "/policy-schedule",
+    icon: Clock,
+    badge: null,
+    submenu: null
+  },
+  {
+    title: "SIEM Integration",
+    href: "/siem-integration",
+    icon: Database,
+    badge: null,
+    submenu: null
+  }
 ];
 
 export default function Sidebar() {
+  const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
 
-  const toggleMenu = (key: string) => {
-    setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleMenu = (title: string) => {
+    setOpenMenus(prev => ({
+      ...prev,
+      [title]: !prev[title]
+    }));
+  };
+
+  const isMenuActive = (item: any) => {
+    if (item.href === "/" && pathname === "/") return true;
+    if (item.href !== "/" && pathname.startsWith(item.href)) return true;
+    if (item.submenu) {
+      return item.submenu.some((sub: any) => pathname === sub.href);
+    }
+    return false;
   };
 
   return (
-    <aside className="fixed top-0 left-0 h-full w-72 bg-green-700 text-white flex flex-col justify-between z-40 shadow-lg">
-      <div>
-        <div className="p-6 pb-2 text-2xl font-bold">Open-NGFW</div>
-        <ul className="space-y-1 px-2" id="sidebarMenu">
-          {menuData.map((menu) => (
-            <li key={menu.key}>
-              <button
-                className="menu-item flex items-center gap-2 px-3 py-2 rounded hover:bg-green-800 cursor-pointer font-semibold w-full text-left"
-                onClick={() => toggleMenu(menu.key)}
-                aria-expanded={!!openMenus[menu.key]}
-                aria-controls={`${menu.key}-sub`}
-              >
-                {menu.icon} {menu.label}
-                <span className="ml-auto text-xs">{openMenus[menu.key] ? '-' : '+'}</span>
-              </button>
-              <ul
-                className={`submenu ${openMenus[menu.key] ? '' : 'hidden'} ml-4 border-l border-green-800 pl-3 space-y-1`}
-                id={`${menu.key}-sub`}
-              >
-                {menu.submenu.map((sub) => (
-                  <li key={sub.key}>
-                    {sub.href ? (
-                      <a
-                        href={sub.href}
-                        className="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-800 cursor-pointer text-sm w-full h-full"
-                      >
-                        {sub.icon} {sub.label}
-                      </a>
-                    ) : (
-                      <button
-                        className="submenu-item flex items-center gap-2 px-2 py-1 rounded hover:bg-green-800 cursor-pointer text-sm w-full text-left"
-                        // onClick={() => ...} // handle section change if needed
-                      >
-                        {sub.icon} {sub.label}
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
+    <div className="flex flex-col w-64 bg-white border-r border-gray-200">
+      {/* Header */}
+      <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200">
+        <div className="flex items-center space-x-2">
+          <Shield className="w-8 h-8 text-blue-600" />
+          <span className="text-xl font-bold text-gray-900">Open-NGFW</span>
+        </div>
       </div>
-      <div className="p-4 text-center text-gray-200 text-sm">Open-NGFW v1.1.2</div>
-    </aside>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+        {menuItems.map((item) => {
+          const isActive = isMenuActive(item);
+          const hasSubmenu = item.submenu && item.submenu.length > 0;
+          const isSubmenuOpen = openMenus[item.title];
+
+          return (
+            <div key={item.href}>
+              {hasSubmenu ? (
+                <div>
+                  <button
+                    onClick={() => toggleMenu(item.title)}
+                    className={cn(
+                      "flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                      isActive
+                        ? "bg-blue-50 text-blue-700 border border-blue-200"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    )}
+                  >
+                    <item.icon className={cn(
+                      "w-5 h-5 mr-3",
+                      isActive ? "text-blue-600" : "text-gray-400"
+                    )} />
+                    <span className="flex-1 text-left">{item.title}</span>
+                    {isSubmenuOpen ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                    {item.badge && (
+                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                  {isSubmenuOpen && (
+                    <div className="ml-6 mt-1 space-y-1">
+                      {item.submenu.map((sub: any) => {
+                        const isSubActive = pathname === sub.href;
+                        return (
+                          <Link
+                            key={sub.href}
+                            href={sub.href}
+                            className={cn(
+                              "flex items-center px-3 py-2 text-sm rounded-lg transition-colors",
+                              isSubActive
+                                ? "bg-blue-50 text-blue-700 border border-blue-200"
+                                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            )}
+                          >
+                            <sub.icon className={cn(
+                              "w-4 h-4 mr-3",
+                              isSubActive ? "text-blue-600" : "text-gray-400"
+                            )} />
+                            <div className="flex-1">
+                              <div className="font-medium">{sub.title}</div>
+                              <div className="text-xs text-gray-500">{sub.description}</div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                    isActive
+                      ? "bg-blue-50 text-blue-700 border border-blue-200"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  )}
+                >
+                  <item.icon className={cn(
+                    "w-5 h-5 mr-3",
+                    isActive ? "text-blue-600" : "text-gray-400"
+                  )} />
+                  <span className="flex-1">{item.title}</span>
+                  {item.badge && (
+                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              )}
+            </div>
+          );
+        })}
+      </nav>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-200">
+        <div className="flex items-center space-x-2 text-sm text-gray-500">
+          <CheckCircle className="w-4 h-4 text-green-500" />
+          <span>System Online</span>
+        </div>
+      </div>
+    </div>
   );
 } 
