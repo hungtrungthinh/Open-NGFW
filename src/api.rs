@@ -23,7 +23,7 @@ use axum::http::Request;
 use axum::response::Response;
 use axum::response::IntoResponse;
 use std::fs;
-use std::path::Path;
+use std::path::Path as StdPath;
 
 // Type alias for the application state
 pub type AppState = (Arc<RwLock<Firewall>>, Arc<RwLock<NetworkManager>>, Arc<LogManager>);
@@ -1497,7 +1497,7 @@ pub async fn delete_nat_rule(Path(id): Path<String>) -> (StatusCode, Json<serde_
 }
 
 fn read_nat_rules_from_file() -> Vec<NatRule> {
-    if Path::new(NAT_RULES_PATH).exists() {
+    if StdPath::new(NAT_RULES_PATH).exists() {
         let data = fs::read_to_string(NAT_RULES_PATH).unwrap_or_default();
         serde_json::from_str(&data).unwrap_or_default()
     } else {
